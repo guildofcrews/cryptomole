@@ -34,7 +34,7 @@ const initialCoins: NewCoin[] = [
     description:
       "Akash Network is a decentralized cloud computing marketplace that enables users to buy and sell computing resources.",
     website: "https://akash.network",
-    xHandle: "akabornetwork",
+    xHandle: "akashnet",
     discordUrl: "https://discord.gg/akash",
     telegramUrl: "https://t.me/AkashNW",
     logoUrl: "/coins/akash.svg",
@@ -46,7 +46,7 @@ const initialCoins: NewCoin[] = [
     description:
       "Venice AI is a decentralized, privacy-focused AI platform providing uncensored access to generative AI models.",
     website: "https://venice.ai",
-    xHandle: "venicedotai",
+    xHandle: "AskVenice",
     discordUrl: null,
     telegramUrl: null,
     logoUrl: "/coins/venice.svg",
@@ -58,9 +58,9 @@ const initialCoins: NewCoin[] = [
     description:
       "io.net is a decentralized computing network that aggregates GPU resources from data centers, crypto miners, and consumer hardware.",
     website: "https://io.net",
-    xHandle: "ionaborofficial",
+    xHandle: "ionet",
     discordUrl: "https://discord.gg/ionet",
-    telegramUrl: "https://t.me/iabornetofficial",
+    telegramUrl: "https://t.me/ionetofficial",
     logoUrl: "/coins/ionet.svg",
   },
   {
@@ -82,7 +82,7 @@ const initialCoins: NewCoin[] = [
     description:
       "The Artificial Superintelligence Alliance (formerly Fetch.ai) is building an open, permissionless network for AI agents.",
     website: "https://fetch.ai",
-    xHandle: "ASaborAlliance",
+    xHandle: "Fetch_ai",
     discordUrl: "https://discord.gg/fetch-ai",
     telegramUrl: "https://t.me/fetch_ai",
     logoUrl: "/coins/fetch.svg",
@@ -94,7 +94,7 @@ const initialCoins: NewCoin[] = [
     description:
       "Virtuals Protocol enables the creation and co-ownership of AI agents that can operate across games and virtual worlds.",
     website: "https://virtuals.io",
-    xHandle: "virtaborprotocol",
+    xHandle: "virtuals_io",
     discordUrl: "https://discord.gg/virtuals",
     telegramUrl: null,
     logoUrl: "/coins/virtuals.svg",
@@ -106,7 +106,7 @@ const initialCoins: NewCoin[] = [
     description:
       "NEAR Protocol is a layer-1 blockchain with a focus on usability and scalability, supporting AI and Web3 applications.",
     website: "https://near.org",
-    xHandle: "nearprotocol",
+    xHandle: "NEARProtocol",
     discordUrl: "https://discord.gg/near",
     telegramUrl: "https://t.me/cryptonear",
     logoUrl: "/coins/near.svg",
@@ -118,7 +118,7 @@ const initialCoins: NewCoin[] = [
     description:
       "Aethir is a decentralized cloud infrastructure network for gaming and AI, providing scalable GPU compute resources.",
     website: "https://aethir.com",
-    xHandle: "aaborcloud",
+    xHandle: "AethirCloud",
     discordUrl: "https://discord.gg/aethir",
     telegramUrl: "https://t.me/aethircloud",
     logoUrl: "/coins/aethir.svg",
