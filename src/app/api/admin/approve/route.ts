@@ -4,20 +4,48 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { posts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
-function validateApiKey(request: NextRequest): boolean {
+type ApiKeyValidation = 
+  | { valid: true }
+  | { valid: false; error: string; status: 401 | 503 };
+
+function validateApiKey(request: NextRequest): ApiKeyValidation {
+  const apiKey = process.env.INGEST_API_KEY;
+  
+  if (!apiKey) {
+    return {
+      valid: false,
+      error: "Admin API not configured. Set INGEST_API_KEY environment variable.",
+      status: 503,
+    };
+  }
+  
   const authHeader = request.headers.get("authorization");
   if (!authHeader?.startsWith("Bearer ")) {
-    return false;
+    return {
+      valid: false,
+      error: "Unauthorized. Provide a valid Bearer token.",
+      status: 401,
+    };
   }
+  
   const token = authHeader.slice(7);
-  return token === process.env.INGEST_API_KEY;
+  if (token !== apiKey) {
+    return {
+      valid: false,
+      error: "Unauthorized. Invalid API key.",
+      status: 401,
+    };
+  }
+  
+  return { valid: true };
 }
 
 export async function POST(request: NextRequest) {
-  if (!validateApiKey(request)) {
+  const validation = validateApiKey(request);
+  if (!validation.valid) {
     return NextResponse.json(
-      { error: "Unauthorized. Provide a valid Bearer token." },
-      { status: 401 }
+      { error: validation.error },
+      { status: validation.status }
     );
   }
 
