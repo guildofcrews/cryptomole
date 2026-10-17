@@ -1,8 +1,12 @@
 import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle, NeonHttpDatabase } from "drizzle-orm/neon-http";
 import * as schema from "./schema";
 
-function createDb() {
+let _db: NeonHttpDatabase<typeof schema> | null = null;
+
+function getDb(): NeonHttpDatabase<typeof schema> {
+  if (_db) return _db;
+  
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error(
@@ -11,8 +15,19 @@ function createDb() {
   }
   
   const sql = neon(connectionString);
-  return drizzle(sql, { schema });
+  _db = drizzle(sql, { schema });
+  return _db;
 }
 
-export const db = createDb();
+export const db = new Proxy({} as NeonHttpDatabase<typeof schema>, {
+  get(_, prop) {
+    const database = getDb();
+    const value = database[prop as keyof typeof database];
+    if (typeof value === "function") {
+      return value.bind(database);
+    }
+    return value;
+  },
+});
+
 export * from "./schema";

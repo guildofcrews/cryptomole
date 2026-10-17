@@ -177,22 +177,26 @@ vercel
 ### 3. Add Environment Variables
 
 In the Vercel dashboard, add:
-- `INGEST_API_KEY` - Your secure API key for post ingestion
+- `INGEST_API_KEY` - Your secure API key for post ingestion (optional - API endpoints return 503 if not set)
 
-### 4. Run Migrations
-
-After deployment, run migrations via Vercel CLI or locally with production credentials:
-
-```bash
-npm run db:push
-npm run db:seed
-```
-
-### 5. Deploy
+### 4. Deploy
 
 ```bash
 vercel --prod
 ```
+
+**Automatic Database Setup**: Each build automatically:
+- Creates the database schema (tables, enums) if not exists
+- Upserts the 9 seed coins (idempotent - won't duplicate)
+- Uses `DATABASE_URL_UNPOOLED` for DDL operations when available
+- Never seeds sample posts in production
+
+No manual migration step is required after the Neon integration is connected.
+
+### Graceful Degradation
+
+- **Pages**: If the database is unavailable or tables don't exist, pages show empty states instead of crashing
+- **API Endpoints**: Return 503 "Service Unavailable" if `INGEST_API_KEY` is not configured
 
 ## Project Structure
 
@@ -248,14 +252,15 @@ To add more coins, insert them into the `coins` table or extend the seed script.
 | Command           | Description                           |
 |-------------------|---------------------------------------|
 | `npm run dev`     | Start development server              |
-| `npm run build`   | Build for production                  |
+| `npm run build`   | Build for production (runs db:setup first) |
 | `npm run start`   | Start production server               |
 | `npm run lint`    | Run ESLint                            |
-| `npm run db:push` | Push schema to database               |
+| `npm run db:setup`| Create schema + upsert coins (idempotent, runs on build) |
+| `npm run db:push` | Push schema to database (Drizzle)     |
 | `npm run db:generate` | Generate migration files          |
 | `npm run db:migrate`  | Run pending migrations            |
 | `npm run db:studio`   | Open Drizzle Studio                |
-| `npm run db:seed`     | Seed database with initial data   |
+| `npm run db:seed`     | Seed database with initial data (dev) |
 
 ## Contributing
 

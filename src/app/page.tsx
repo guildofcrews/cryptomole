@@ -40,11 +40,17 @@ async function CoinsSidebar() {
       <h2 className="font-semibold mb-4 text-sm text-muted uppercase tracking-wider">
         Tracked Coins
       </h2>
-      <div className="flex flex-wrap gap-2">
-        {coins.map((coin) => (
-          <CoinCard key={coin.id} coin={coin} variant="chip" />
-        ))}
-      </div>
+      {coins.length > 0 ? (
+        <div className="flex flex-wrap gap-2">
+          {coins.map((coin) => (
+            <CoinCard key={coin.id} coin={coin} variant="chip" />
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted">
+          Coins will appear here once the database is set up.
+        </p>
+      )}
     </div>
   );
 }
