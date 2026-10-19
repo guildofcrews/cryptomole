@@ -1,14 +1,57 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { getCoins, getApprovedPosts } from "@/lib/queries";
+import {
+  getCoins,
+  getCategories,
+  getApprovedPosts,
+  getApprovedPostsByCategory,
+} from "@/lib/queries";
 import { PostCard } from "@/components/PostCard";
 import { CoinCard } from "@/components/CoinCard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
 
-async function PostsFeed() {
-  const posts = await getApprovedPosts(30);
+interface HomePageProps {
+  searchParams: Promise<{ category?: string }>;
+}
+
+async function CategoryChips({ activeCategory }: { activeCategory?: string }) {
+  const categories = await getCategories();
+
+  return (
+    <div className="flex flex-wrap gap-2 mb-6">
+      <Link
+        href="/"
+        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+          !activeCategory
+            ? "bg-gradient-to-r from-ui-primary to-purple-500 text-white"
+            : "bg-white/[0.05] text-ui-muted hover:bg-white/[0.08] hover:text-white"
+        }`}
+      >
+        All
+      </Link>
+      {categories.map((cat) => (
+        <Link
+          key={cat.slug}
+          href={`/?category=${cat.slug}`}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+            activeCategory === cat.slug
+              ? "bg-gradient-to-r from-ui-primary to-purple-500 text-white"
+              : "bg-white/[0.05] text-ui-muted hover:bg-white/[0.08] hover:text-white"
+          }`}
+        >
+          {cat.name}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+async function PostsFeed({ categorySlug }: { categorySlug?: string }) {
+  const posts = categorySlug
+    ? await getApprovedPostsByCategory(categorySlug, 30)
+    : await getApprovedPosts(30);
 
   if (posts.length === 0) {
     return (
@@ -27,7 +70,9 @@ async function PostsFeed() {
             <path d="m21 21-4.3-4.3" />
           </svg>
         </div>
-        <h3 className="font-semibold text-lg text-white mb-2">No news yet</h3>
+        <h3 className="font-semibold text-lg text-white mb-2">
+          {categorySlug ? "No news in this category yet" : "No news yet"}
+        </h3>
         <p className="text-ui-muted text-sm">
           The mole is digging for the latest updates from official sources.
           Check back soon!
@@ -52,14 +97,22 @@ async function PostsFeed() {
 }
 
 async function CoinsSidebar() {
-  const coins = await getCoins();
+  const allCoins = await getCoins();
+  const displayCoins = allCoins.slice(0, 12);
 
   return (
     <div className="card p-5">
-      <h2 className="section-title mb-4">Tracked Coins</h2>
-      {coins.length > 0 ? (
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="section-title">Tracked Coins</h2>
+        {allCoins.length > 12 && (
+          <Link href="/coins" className="text-xs text-ui-accent hover:text-ui-primary transition-colors">
+            View all {allCoins.length} →
+          </Link>
+        )}
+      </div>
+      {displayCoins.length > 0 ? (
         <div className="flex flex-wrap gap-2">
-          {coins.map((coin) => (
+          {displayCoins.map((coin) => (
             <CoinCard key={coin.id} coin={coin} variant="chip" />
           ))}
         </div>
@@ -72,20 +125,25 @@ async function CoinsSidebar() {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const { category } = await searchParams;
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
-      <section className="mb-8">
+      <section className="mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
           <h1 className="text-2xl sm:text-3xl font-semibold gradient-text">
             Today&apos;s dig
           </h1>
           <span className="badge-official w-fit">Official sources only</span>
         </div>
-        <p className="text-ui-muted text-sm sm:text-base">
+        <p className="text-ui-muted text-sm sm:text-base mb-4">
           Verified announcements and updates from official AI crypto project
           teams. No rumors, no speculation.
         </p>
+        <Suspense fallback={<div className="h-10" />}>
+          <CategoryChips activeCategory={category} />
+        </Suspense>
       </section>
 
       <div className="grid lg:grid-cols-[1fr_300px] gap-6 lg:gap-8">
@@ -98,7 +156,7 @@ export default function HomePage() {
               </div>
             }
           >
-            <PostsFeed />
+            <PostsFeed categorySlug={category} />
           </Suspense>
         </section>
 

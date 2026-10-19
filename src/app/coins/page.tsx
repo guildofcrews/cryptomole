@@ -1,20 +1,59 @@
 import { Suspense } from "react";
-import { getCoins } from "@/lib/queries";
+import Link from "next/link";
+import { getCoins, getCategories, getCoinsByCategory } from "@/lib/queries";
 import { CoinCard } from "@/components/CoinCard";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
 
+interface CoinsPageProps {
+  searchParams: Promise<{ category?: string }>;
+}
+
 export const metadata = {
   title: "All Coins | cryptomole",
   description:
-    "Browse all AI crypto projects tracked by cryptomole. Official news from Render, Akash, Bittensor, NEAR, and more.",
+    "Browse all 50 crypto projects tracked by cryptomole. Official news from AI, DeFi, Gaming, NFTs, and more.",
 };
 
-async function CoinsGrid() {
-  const coins = await getCoins();
+async function CategoryChips({ activeCategory }: { activeCategory?: string }) {
+  const categories = await getCategories();
 
-  if (coins.length === 0) {
+  return (
+    <div className="flex flex-wrap gap-2 mb-6">
+      <Link
+        href="/coins"
+        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+          !activeCategory
+            ? "bg-gradient-to-r from-ui-primary to-purple-500 text-white"
+            : "bg-white/[0.05] text-ui-muted hover:bg-white/[0.08] hover:text-white"
+        }`}
+      >
+        All
+      </Link>
+      {categories.map((cat) => (
+        <Link
+          key={cat.slug}
+          href={`/coins?category=${cat.slug}`}
+          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+            activeCategory === cat.slug
+              ? "bg-gradient-to-r from-ui-primary to-purple-500 text-white"
+              : "bg-white/[0.05] text-ui-muted hover:bg-white/[0.08] hover:text-white"
+          }`}
+        >
+          {cat.name}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+async function CoinsGrid({ categorySlug }: { categorySlug?: string }) {
+  const coinsList = categorySlug
+    ? await getCoinsByCategory(categorySlug)
+    : await getCoins();
+
+  if (coinsList.length === 0) {
     return (
       <div className="card p-8 text-center max-w-md mx-auto">
         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-ui-primary/15 to-purple-500/10 flex items-center justify-center">
@@ -33,42 +72,56 @@ async function CoinsGrid() {
           </svg>
         </div>
         <h3 className="font-semibold text-lg text-white mb-2">
-          No coins tracked yet
+          {categorySlug ? "No coins in this category" : "No coins tracked yet"}
         </h3>
         <p className="text-ui-muted text-sm">
-          Coins will appear here once the database is set up with project data.
+          {categorySlug
+            ? "Try selecting a different category."
+            : "Coins will appear here once the database is set up with project data."}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {coins.map((coin, index) => (
-        <div
-          key={coin.id}
-          style={{ animationDelay: `${index * 50}ms` }}
-          className="animate-fade-in"
-        >
-          <CoinCard coin={coin} variant="card" />
-        </div>
-      ))}
-    </div>
+    <>
+      <p className="text-sm text-ui-muted mb-4">
+        {coinsList.length} coin{coinsList.length !== 1 ? "s" : ""}
+        {categorySlug ? " in this category" : " tracked"}
+      </p>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {coinsList.map((coin, index) => (
+          <div
+            key={coin.id}
+            style={{ animationDelay: `${index * 30}ms` }}
+            className="animate-fade-in"
+          >
+            <CoinCard coin={coin} variant="card" />
+          </div>
+        ))}
+      </div>
+    </>
   );
 }
 
-export default function CoinsPage() {
+export default async function CoinsPage({ searchParams }: CoinsPageProps) {
+  const { category } = await searchParams;
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
-      <header className="mb-8">
+      <header className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-semibold gradient-text mb-2">
           Tracked Coins
         </h1>
         <p className="text-ui-muted">
-          AI crypto projects with official news coverage. Click any coin to see
+          Crypto projects with official news coverage. Click any coin to see
           their latest updates.
         </p>
       </header>
+
+      <Suspense fallback={<div className="h-10" />}>
+        <CategoryChips activeCategory={category} />
+      </Suspense>
 
       <Suspense
         fallback={
@@ -89,7 +142,7 @@ export default function CoinsPage() {
           </div>
         }
       >
-        <CoinsGrid />
+        <CoinsGrid categorySlug={category} />
       </Suspense>
     </div>
   );

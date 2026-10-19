@@ -112,6 +112,21 @@ export default async function CoinPage({
             <span className="ticker-badge text-xs mt-1">{coin.ticker}</span>
           </div>
         </div>
+
+        {coin.categories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-4">
+            {coin.categories.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/category/${cat.slug}`}
+                className="px-2.5 py-1 rounded-full text-xs font-medium bg-white/[0.05] text-ui-muted hover:bg-white/[0.08] hover:text-white transition-all border border-white/10"
+              >
+                {cat.name}
+              </Link>
+            ))}
+          </div>
+        )}
+
         {coin.description && (
           <p className="text-ui-muted mb-4 leading-relaxed">
             {coin.description}
