@@ -1,101 +1,366 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0f0f0f;
-  --foreground: #ededed;
-  --card: #1a1a1a;
-  --card-hover: #242424;
-  --border: #2a2a2a;
-  --muted: #888888;
-  --accent: #f59e0b;
-  --accent-hover: #fbbf24;
-  --success: #22c55e;
-  --danger: #ef4444;
+  /* Chat/base colors */
+  --chat-bg: #0d1117;
+  --chat-surface: #161b22;
+  --chat-border: #30363d;
+
+  /* UI colors */
+  --ui-primary: #6366f1;
+  --ui-primary-hover: #4f46e5;
+  --ui-secondary: #6b7280;
+  --ui-muted: #9ca3af;
+  --ui-accent: #a5b4fc;
+  --ui-danger: #ef4444;
+
+  /* Status colors */
+  --status-connected: #6366f1;
+  --status-connecting: #f59e0b;
+  --status-disconnected: #ef4444;
+
+  /* Text colors */
+  --text-primary: #ffffff;
+  --text-body: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-hint: #71717a;
+
+  /* Gradient */
+  --gradient-primary: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+  /* Legacy mappings for compatibility */
+  --background: var(--chat-bg);
+  --foreground: var(--text-primary);
+  --card: var(--chat-surface);
+  --card-hover: #1e2433;
+  --border: var(--chat-border);
+  --muted: var(--ui-muted);
+  --accent: var(--ui-accent);
+  --accent-hover: var(--ui-primary);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
+  --color-background: var(--chat-bg);
+  --color-foreground: var(--text-primary);
+  --color-chat-bg: var(--chat-bg);
+  --color-chat-surface: var(--chat-surface);
+  --color-chat-border: var(--chat-border);
+  --color-card: var(--chat-surface);
   --color-card-hover: var(--card-hover);
-  --color-border: var(--border);
-  --color-muted: var(--muted);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-border: var(--chat-border);
+  --color-ui-primary: var(--ui-primary);
+  --color-ui-primary-hover: var(--ui-primary-hover);
+  --color-ui-secondary: var(--ui-secondary);
+  --color-ui-muted: var(--ui-muted);
+  --color-ui-accent: var(--ui-accent);
+  --color-ui-danger: var(--ui-danger);
+  --color-muted: var(--ui-muted);
+  --color-accent: var(--ui-accent);
+  --color-accent-hover: var(--ui-primary);
+  --font-sans: "Inter", var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--chat-bg);
+  color: var(--text-body);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(156 163 175 / 0.3);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(156 163 175 / 0.5);
+}
+
+/* Coin logo */
 .coin-logo {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
-  background: var(--card);
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+  border: 1px solid rgba(99, 102, 241, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
   font-size: 14px;
-  color: var(--accent);
+  color: var(--ui-accent);
 }
 
+/* Ticker badge */
 .ticker-badge {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 4px;
-  background: var(--accent);
-  color: var(--background);
-}
-
-.source-badge {
-  font-size: 11px;
-  font-weight: 500;
   padding: 2px 6px;
-  border-radius: 3px;
-  background: var(--border);
-  color: var(--muted);
+  border-radius: 9999px;
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--ui-accent);
+  border: 1px solid rgba(99, 102, 241, 0.2);
   text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
+/* Source badge */
+.source-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Official badge */
+.badge-official {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Card */
 .card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  background: var(--chat-surface);
+  border: 1px solid var(--chat-border);
+  border-radius: 16px;
   transition: all 0.2s ease;
 }
 
 .card:hover {
   background: var(--card-hover);
-  border-color: #3a3a3a;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
+.card-cta {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1), rgba(99, 102, 241, 0.05));
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+/* Buttons */
 .btn-primary {
-  background: var(--accent);
-  color: var(--background);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--gradient-primary);
+  color: white;
   font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 8px;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
   transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-  background: var(--accent-hover);
+  box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.5);
+  transform: scale(1.02);
 }
 
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  color: #e5e7eb;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 1px solid var(--chat-border);
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Links */
 .link {
-  color: var(--accent);
-  text-decoration: none;
+  color: var(--ui-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
   transition: color 0.2s ease;
 }
 
 .link:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
+  color: var(--ui-primary);
+}
+
+/* Header */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: #1e2938;
+  border-bottom: 1px solid var(--chat-border);
+}
+
+.header-link {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 0;
+  position: relative;
+  color: var(--ui-muted);
+  transition: color 0.2s ease;
+}
+
+.header-link:hover {
+  color: white;
+}
+
+.header-link.active {
+  color: white;
+}
+
+.header-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--ui-primary);
+  border-radius: 9999px;
+}
+
+/* Status pills */
+.status-success {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #86efac;
+}
+
+.status-warning {
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fcd34d;
+}
+
+.status-error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff, #a5b4fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.2s ease-out forwards;
+}
+
+/* Spinner */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--ui-primary);
+  border-top-color: transparent;
+  border-radius: 9999px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Frosted glass effect */
+.frosted {
+  background: rgba(22, 27, 34, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+/* Input styling */
+.input {
+  width: 100%;
+  border-radius: 12px;
+  background: rgba(13, 17, 23, 0.4);
+  border: 1px solid var(--chat-border);
+  padding: 12px 16px;
+  font-size: 14px;
+  color: white;
+  transition: border-color 0.2s ease;
+}
+
+.input::placeholder {
+  color: #71717a;
+}
+
+.input:focus {
+  outline: none;
+  border-color: rgba(99, 102, 241, 0.6);
+}
+
+/* Section title */
+.section-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ui-muted);
+  opacity: 0.7;
 }

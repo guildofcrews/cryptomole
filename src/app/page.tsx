@@ -13,10 +13,23 @@ async function PostsFeed() {
   if (posts.length === 0) {
     return (
       <div className="card p-8 text-center">
-        <div className="text-4xl mb-4">🕵️</div>
-        <h3 className="font-semibold text-lg mb-2">No news yet</h3>
-        <p className="text-muted text-sm">
-          CryptoMole is digging for the latest updates from official sources.
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-ui-primary/15 to-purple-500/10 flex items-center justify-center">
+          <svg
+            className="w-8 h-8 text-ui-accent"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        </div>
+        <h3 className="font-semibold text-lg text-white mb-2">No news yet</h3>
+        <p className="text-ui-muted text-sm">
+          The mole is digging for the latest updates from official sources.
           Check back soon!
         </p>
       </div>
@@ -25,8 +38,14 @@ async function PostsFeed() {
 
   return (
     <div className="grid gap-4">
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+      {posts.map((post, index) => (
+        <div
+          key={post.id}
+          style={{ animationDelay: `${index * 50}ms` }}
+          className="animate-fade-in"
+        >
+          <PostCard post={post} />
+        </div>
       ))}
     </div>
   );
@@ -36,10 +55,8 @@ async function CoinsSidebar() {
   const coins = await getCoins();
 
   return (
-    <div className="card p-4">
-      <h2 className="font-semibold mb-4 text-sm text-muted uppercase tracking-wider">
-        Tracked Coins
-      </h2>
+    <div className="card p-5">
+      <h2 className="section-title mb-4">Tracked Coins</h2>
       {coins.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {coins.map((coin) => (
@@ -47,7 +64,7 @@ async function CoinsSidebar() {
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted">
+        <p className="text-sm text-ui-muted">
           Coins will appear here once the database is set up.
         </p>
       )}
@@ -57,26 +74,27 @@ async function CoinsSidebar() {
 
 export default function HomePage() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-6 sm:py-8">
       <section className="mb-8">
-        <div className="flex items-center gap-4 mb-2">
-          <h1 className="text-3xl font-bold">Latest News</h1>
-          <span className="px-2 py-1 text-xs bg-accent/10 text-accent rounded-full">
-            Direct from teams
-          </span>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-2">
+          <h1 className="text-2xl sm:text-3xl font-semibold gradient-text">
+            Today&apos;s dig
+          </h1>
+          <span className="badge-official w-fit">Official sources only</span>
         </div>
-        <p className="text-muted">
+        <p className="text-ui-muted text-sm sm:text-base">
           Verified announcements and updates from official AI crypto project
-          sources. No rumors, no speculation.
+          teams. No rumors, no speculation.
         </p>
       </section>
 
-      <div className="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div className="grid lg:grid-cols-[1fr_300px] gap-6 lg:gap-8">
         <section>
           <Suspense
             fallback={
               <div className="card p-8 text-center">
-                <div className="animate-pulse text-muted">Loading posts...</div>
+                <div className="spinner mx-auto mb-3" />
+                <p className="text-ui-muted text-sm">Loading posts...</p>
               </div>
             }
           >
@@ -87,35 +105,40 @@ export default function HomePage() {
         <aside className="space-y-6">
           <Suspense
             fallback={
-              <div className="card p-4">
-                <div className="animate-pulse text-muted">Loading coins...</div>
+              <div className="card p-5">
+                <div className="animate-pulse">
+                  <div className="h-4 bg-white/10 rounded w-24 mb-4" />
+                  <div className="flex flex-wrap gap-2">
+                    <div className="h-8 bg-white/10 rounded-xl w-16" />
+                    <div className="h-8 bg-white/10 rounded-xl w-20" />
+                    <div className="h-8 bg-white/10 rounded-xl w-14" />
+                  </div>
+                </div>
               </div>
             }
           >
             <CoinsSidebar />
           </Suspense>
 
-          <div className="card p-4">
-            <h2 className="font-semibold mb-3 text-sm text-muted uppercase tracking-wider">
-              About CryptoMole
-            </h2>
-            <p className="text-sm text-muted mb-3">
+          <div className="card p-5">
+            <h2 className="section-title mb-3">About</h2>
+            <p className="text-sm text-ui-muted mb-3">
               We aggregate news directly from official project sources: team X
               accounts, blogs, and community calls.
             </p>
-            <Link href="/about" className="text-sm link">
+            <Link href="/about" className="link text-sm">
               Learn more →
             </Link>
           </div>
 
-          <div className="card p-4 border-accent/30">
-            <h2 className="font-semibold mb-3 text-sm text-accent uppercase tracking-wider">
-              Sponsor CryptoMole
+          <div className="card card-cta p-5">
+            <h2 className="section-title text-ui-accent mb-3">
+              Sponsor cryptomole
             </h2>
-            <p className="text-sm text-muted mb-3">
+            <p className="text-sm text-ui-muted mb-4">
               Support independent, source-verified crypto journalism.
             </p>
-            <Link href="/sponsor" className="btn-primary inline-block text-sm">
+            <Link href="/sponsor" className="btn-primary text-sm py-2.5 px-5">
               Become a Sponsor
             </Link>
           </div>

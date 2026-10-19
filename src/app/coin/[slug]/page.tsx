@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import { getCoinBySlug, getApprovedPostsByCoin } from "@/lib/queries";
 import { PostCard } from "@/components/PostCard";
 import { CoinLinks } from "@/components/CoinCard";
@@ -16,10 +15,10 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const coin = await getCoinBySlug(slug);
-  if (!coin) return { title: "Coin Not Found | CryptoMole" };
+  if (!coin) return { title: "Coin Not Found | cryptomole" };
 
   return {
-    title: `${coin.name} (${coin.ticker}) News | CryptoMole`,
+    title: `${coin.name} (${coin.ticker}) News | cryptomole`,
     description: `Latest official news and updates for ${coin.name} (${coin.ticker}). Direct from the team's official sources.`,
   };
 }
@@ -30,10 +29,25 @@ async function CoinFeed({ slug }: { slug: string }) {
   if (posts.length === 0) {
     return (
       <div className="card p-8 text-center">
-        <div className="text-4xl mb-4">🕵️</div>
-        <h3 className="font-semibold text-lg mb-2">No news yet for this coin</h3>
-        <p className="text-muted text-sm">
-          CryptoMole is watching official channels. Check back soon for updates!
+        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-ui-primary/15 to-purple-500/10 flex items-center justify-center">
+          <svg
+            className="w-8 h-8 text-ui-accent"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.3-4.3" />
+          </svg>
+        </div>
+        <h3 className="font-semibold text-lg text-white mb-2">
+          No news yet for this coin
+        </h3>
+        <p className="text-ui-muted text-sm">
+          The mole is watching official channels. Check back soon for updates!
         </p>
       </div>
     );
@@ -41,8 +55,14 @@ async function CoinFeed({ slug }: { slug: string }) {
 
   return (
     <div className="grid gap-4">
-      {posts.map((post) => (
-        <PostCard key={post.id} post={post} showCoin={false} />
+      {posts.map((post, index) => (
+        <div
+          key={post.id}
+          style={{ animationDelay: `${index * 50}ms` }}
+          className="animate-fade-in"
+        >
+          <PostCard post={post} showCoin={false} />
+        </div>
       ))}
     </div>
   );
@@ -61,12 +81,22 @@ export default async function CoinPage({
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <Link
         href="/"
-        className="inline-flex items-center gap-1 text-sm text-muted hover:text-foreground mb-6 transition-colors"
+        className="inline-flex items-center gap-1 text-sm text-ui-muted hover:text-white mb-6 transition-colors group"
       >
-        <ChevronLeft className="w-4 h-4" />
+        <svg
+          className="w-4 h-4 transition-transform group-hover:-translate-x-0.5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          viewBox="0 0 24 24"
+        >
+          <path d="m15 18-6-6 6-6" />
+        </svg>
         Back to all news
       </Link>
 
@@ -76,22 +106,29 @@ export default async function CoinPage({
             {coin.ticker.slice(0, 2)}
           </div>
           <div>
-            <h1 className="text-3xl font-bold">{coin.name}</h1>
-            <span className="ticker-badge text-base">{coin.ticker}</span>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-white">
+              {coin.name}
+            </h1>
+            <span className="ticker-badge text-xs mt-1">{coin.ticker}</span>
           </div>
         </div>
         {coin.description && (
-          <p className="text-muted mb-4">{coin.description}</p>
+          <p className="text-ui-muted mb-4 leading-relaxed">
+            {coin.description}
+          </p>
         )}
         <CoinLinks coin={coin} />
       </header>
 
       <section>
-        <h2 className="text-xl font-semibold mb-4">Latest Updates</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">
+          Latest Updates
+        </h2>
         <Suspense
           fallback={
             <div className="card p-8 text-center">
-              <div className="animate-pulse text-muted">Loading posts...</div>
+              <div className="spinner mx-auto mb-3" />
+              <p className="text-ui-muted text-sm">Loading posts...</p>
             </div>
           }
         >
