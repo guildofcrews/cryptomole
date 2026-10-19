@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, pgEnum, primaryKey } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const postStatusEnum = pgEnum("post_status", [
@@ -27,9 +27,56 @@ export const coins = pgTable("coins", {
   discordUrl: text("discord_url"),
   telegramUrl: text("telegram_url"),
   logoUrl: text("logo_url"),
+  coingeckoId: text("coingecko_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const categories = pgTable("categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const subcategories = pgTable("subcategories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  categoryId: uuid("category_id")
+    .notNull()
+    .references(() => categories.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const coinCategories = pgTable(
+  "coin_categories",
+  {
+    coinId: uuid("coin_id")
+      .notNull()
+      .references(() => coins.id, { onDelete: "cascade" }),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categories.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.coinId, t.categoryId] })]
+);
+
+export const coinSubcategories = pgTable(
+  "coin_subcategories",
+  {
+    coinId: uuid("coin_id")
+      .notNull()
+      .references(() => coins.id, { onDelete: "cascade" }),
+    subcategoryId: uuid("subcategory_id")
+      .notNull()
+      .references(() => subcategories.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.coinId, t.subcategoryId] })]
+);
 
 export const posts = pgTable("posts", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -49,6 +96,43 @@ export const posts = pgTable("posts", {
 
 export const coinsRelations = relations(coins, ({ many }) => ({
   posts: many(posts),
+  coinCategories: many(coinCategories),
+  coinSubcategories: many(coinSubcategories),
+}));
+
+export const categoriesRelations = relations(categories, ({ many }) => ({
+  subcategories: many(subcategories),
+  coinCategories: many(coinCategories),
+}));
+
+export const subcategoriesRelations = relations(subcategories, ({ one, many }) => ({
+  category: one(categories, {
+    fields: [subcategories.categoryId],
+    references: [categories.id],
+  }),
+  coinSubcategories: many(coinSubcategories),
+}));
+
+export const coinCategoriesRelations = relations(coinCategories, ({ one }) => ({
+  coin: one(coins, {
+    fields: [coinCategories.coinId],
+    references: [coins.id],
+  }),
+  category: one(categories, {
+    fields: [coinCategories.categoryId],
+    references: [categories.id],
+  }),
+}));
+
+export const coinSubcategoriesRelations = relations(coinSubcategories, ({ one }) => ({
+  coin: one(coins, {
+    fields: [coinSubcategories.coinId],
+    references: [coins.id],
+  }),
+  subcategory: one(subcategories, {
+    fields: [coinSubcategories.subcategoryId],
+    references: [subcategories.id],
+  }),
 }));
 
 export const postsRelations = relations(posts, ({ one }) => ({
@@ -60,5 +144,9 @@ export const postsRelations = relations(posts, ({ one }) => ({
 
 export type Coin = typeof coins.$inferSelect;
 export type NewCoin = typeof coins.$inferInsert;
+export type Category = typeof categories.$inferSelect;
+export type NewCategory = typeof categories.$inferInsert;
+export type Subcategory = typeof subcategories.$inferSelect;
+export type NewSubcategory = typeof subcategories.$inferInsert;
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;

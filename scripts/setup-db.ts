@@ -1,126 +1,15 @@
 /**
  * Database setup script for Vercel builds.
- * - Applies schema using drizzle-kit push (idempotent)
- * - Upserts seed coins (idempotent, never duplicates)
- * - Never seeds sample posts in production
+ * - Applies schema using raw SQL (idempotent)
+ * - Upserts 50 coins, 11 categories, and their relationships
+ * - Never deletes existing posts
  * - Uses DATABASE_URL_UNPOOLED for migrations (required for DDL)
  */
 
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import { sql } from "drizzle-orm";
-import { type NewCoin } from "../src/db/schema";
-
-const initialCoins: NewCoin[] = [
-  {
-    slug: "render",
-    name: "Render Network",
-    ticker: "RENDER",
-    description:
-      "Render Network is a distributed GPU rendering platform that connects artists and studios with node operators to scale rendering work.",
-    website: "https://rendernetwork.com",
-    xHandle: "rendernetwork",
-    discordUrl: "https://discord.gg/rendernetwork",
-    telegramUrl: "https://t.me/rendernetwork",
-    logoUrl: "/coins/render.svg",
-  },
-  {
-    slug: "akash",
-    name: "Akash Network",
-    ticker: "AKT",
-    description:
-      "Akash Network is a decentralized cloud computing marketplace that enables users to buy and sell computing resources.",
-    website: "https://akash.network",
-    xHandle: "akashnet",
-    discordUrl: "https://discord.gg/akash",
-    telegramUrl: "https://t.me/AkashNW",
-    logoUrl: "/coins/akash.svg",
-  },
-  {
-    slug: "venice",
-    name: "Venice AI",
-    ticker: "VVV",
-    description:
-      "Venice AI is a decentralized, privacy-focused AI platform providing uncensored access to generative AI models.",
-    website: "https://venice.ai",
-    xHandle: "AskVenice",
-    discordUrl: null,
-    telegramUrl: null,
-    logoUrl: "/coins/venice.svg",
-  },
-  {
-    slug: "ionet",
-    name: "io.net",
-    ticker: "IO",
-    description:
-      "io.net is a decentralized computing network that aggregates GPU resources from data centers, crypto miners, and consumer hardware.",
-    website: "https://io.net",
-    xHandle: "ionet",
-    discordUrl: "https://discord.gg/ionet",
-    telegramUrl: "https://t.me/ionetofficial",
-    logoUrl: "/coins/ionet.svg",
-  },
-  {
-    slug: "bittensor",
-    name: "Bittensor",
-    ticker: "TAO",
-    description:
-      "Bittensor is a decentralized machine learning network that enables AI models to be trained and shared in a permissionless manner.",
-    website: "https://bittensor.com",
-    xHandle: "opentensor",
-    discordUrl: "https://discord.gg/bittensor",
-    telegramUrl: "https://t.me/taobittensor",
-    logoUrl: "/coins/bittensor.svg",
-  },
-  {
-    slug: "fetch",
-    name: "Artificial Superintelligence Alliance",
-    ticker: "FET",
-    description:
-      "The Artificial Superintelligence Alliance (formerly Fetch.ai) is building an open, permissionless network for AI agents.",
-    website: "https://fetch.ai",
-    xHandle: "Fetch_ai",
-    discordUrl: "https://discord.gg/fetch-ai",
-    telegramUrl: "https://t.me/fetch_ai",
-    logoUrl: "/coins/fetch.svg",
-  },
-  {
-    slug: "virtuals",
-    name: "Virtuals Protocol",
-    ticker: "VIRTUAL",
-    description:
-      "Virtuals Protocol enables the creation and co-ownership of AI agents that can operate across games and virtual worlds.",
-    website: "https://virtuals.io",
-    xHandle: "virtuals_io",
-    discordUrl: "https://discord.gg/virtuals",
-    telegramUrl: null,
-    logoUrl: "/coins/virtuals.svg",
-  },
-  {
-    slug: "near",
-    name: "NEAR Protocol",
-    ticker: "NEAR",
-    description:
-      "NEAR Protocol is a layer-1 blockchain with a focus on usability and scalability, supporting AI and Web3 applications.",
-    website: "https://near.org",
-    xHandle: "NEARProtocol",
-    discordUrl: "https://discord.gg/near",
-    telegramUrl: "https://t.me/cryptonear",
-    logoUrl: "/coins/near.svg",
-  },
-  {
-    slug: "aethir",
-    name: "Aethir",
-    ticker: "ATH",
-    description:
-      "Aethir is a decentralized cloud infrastructure network for gaming and AI, providing scalable GPU compute resources.",
-    website: "https://aethir.com",
-    xHandle: "AethirCloud",
-    discordUrl: "https://discord.gg/aethir",
-    telegramUrl: "https://t.me/aethircloud",
-    logoUrl: "/coins/aethir.svg",
-  },
-];
+import { seedCategories, seedCoins } from "./seed-data";
 
 async function setupDatabase() {
   console.log("🔧 Setting up database...\n");
@@ -141,7 +30,7 @@ async function setupDatabase() {
   const db = drizzle(sqlClient);
 
   console.log("📋 Creating schema (if not exists)...");
-  
+
   try {
     await db.execute(sql`
       DO $$ BEGIN
@@ -171,8 +60,51 @@ async function setupDatabase() {
         discord_url TEXT,
         telegram_url TEXT,
         logo_url TEXT,
+        coingecko_id TEXT,
         created_at TIMESTAMP DEFAULT NOW() NOT NULL,
         updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    await db.execute(sql`
+      ALTER TABLE coins ADD COLUMN IF NOT EXISTS coingecko_id TEXT;
+    `);
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS categories (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        slug TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        description TEXT,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS subcategories (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        slug TEXT NOT NULL UNIQUE,
+        name TEXT NOT NULL,
+        category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS coin_categories (
+        coin_id UUID NOT NULL REFERENCES coins(id) ON DELETE CASCADE,
+        category_id UUID NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
+        PRIMARY KEY (coin_id, category_id)
+      );
+    `);
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS coin_subcategories (
+        coin_id UUID NOT NULL REFERENCES coins(id) ON DELETE CASCADE,
+        subcategory_id UUID NOT NULL REFERENCES subcategories(id) ON DELETE CASCADE,
+        PRIMARY KEY (coin_id, subcategory_id)
       );
     `);
 
@@ -198,38 +130,113 @@ async function setupDatabase() {
     throw error;
   }
 
-  console.log("📦 Upserting seed coins...");
-  
+  console.log("📦 Upserting categories and subcategories...");
+
+  const categoryIdMap = new Map<string, string>();
+  const subcategoryIdMap = new Map<string, string>();
+
   try {
-    for (const coin of initialCoins) {
-      await db.execute(sql`
-        INSERT INTO coins (slug, name, ticker, description, website, x_handle, discord_url, telegram_url, logo_url)
+    for (const category of seedCategories) {
+      const result = await db.execute(sql`
+        INSERT INTO categories (slug, name, description)
+        VALUES (${category.slug}, ${category.name}, ${category.description})
+        ON CONFLICT (slug) DO UPDATE SET
+          name = EXCLUDED.name,
+          description = EXCLUDED.description,
+          updated_at = NOW()
+        RETURNING id
+      `);
+      const id = (result.rows[0] as { id: string }).id;
+      categoryIdMap.set(category.slug, id);
+
+      for (const sub of category.subcategories) {
+        const subResult = await db.execute(sql`
+          INSERT INTO subcategories (slug, name, category_id)
+          VALUES (${sub.slug}, ${sub.name}, ${id}::uuid)
+          ON CONFLICT (slug) DO UPDATE SET
+            name = EXCLUDED.name,
+            category_id = EXCLUDED.category_id,
+            updated_at = NOW()
+          RETURNING id
+        `);
+        const subId = (subResult.rows[0] as { id: string }).id;
+        subcategoryIdMap.set(sub.slug, subId);
+      }
+    }
+    console.log(`✅ Upserted ${seedCategories.length} categories\n`);
+  } catch (error) {
+    console.error("❌ Category upsert failed:", error);
+    throw error;
+  }
+
+  console.log("📦 Upserting coins...");
+
+  const coinIdMap = new Map<string, string>();
+
+  try {
+    for (const coin of seedCoins) {
+      const result = await db.execute(sql`
+        INSERT INTO coins (slug, name, ticker, description, website, x_handle, coingecko_id)
         VALUES (
           ${coin.slug},
           ${coin.name},
           ${coin.ticker},
-          ${coin.description},
+          ${coin.description || null},
           ${coin.website},
           ${coin.xHandle},
-          ${coin.discordUrl},
-          ${coin.telegramUrl},
-          ${coin.logoUrl}
+          ${coin.coingeckoId}
         )
         ON CONFLICT (slug) DO UPDATE SET
           name = EXCLUDED.name,
           ticker = EXCLUDED.ticker,
-          description = EXCLUDED.description,
-          website = EXCLUDED.website,
-          x_handle = EXCLUDED.x_handle,
-          discord_url = EXCLUDED.discord_url,
-          telegram_url = EXCLUDED.telegram_url,
-          logo_url = EXCLUDED.logo_url,
+          description = COALESCE(EXCLUDED.description, coins.description),
+          website = COALESCE(EXCLUDED.website, coins.website),
+          x_handle = COALESCE(EXCLUDED.x_handle, coins.x_handle),
+          coingecko_id = COALESCE(EXCLUDED.coingecko_id, coins.coingecko_id),
           updated_at = NOW()
+        RETURNING id
       `);
+      const id = (result.rows[0] as { id: string }).id;
+      coinIdMap.set(coin.slug, id);
     }
-    console.log(`✅ Upserted ${initialCoins.length} coins\n`);
+    console.log(`✅ Upserted ${seedCoins.length} coins\n`);
   } catch (error) {
     console.error("❌ Coin upsert failed:", error);
+    throw error;
+  }
+
+  console.log("🔗 Linking coins to categories...");
+
+  try {
+    for (const coin of seedCoins) {
+      const coinId = coinIdMap.get(coin.slug);
+      if (!coinId) continue;
+
+      for (const catSlug of coin.categories) {
+        const catId = categoryIdMap.get(catSlug);
+        if (!catId) continue;
+
+        await db.execute(sql`
+          INSERT INTO coin_categories (coin_id, category_id)
+          VALUES (${coinId}::uuid, ${catId}::uuid)
+          ON CONFLICT DO NOTHING
+        `);
+      }
+
+      for (const subSlug of coin.subcategories) {
+        const subId = subcategoryIdMap.get(subSlug);
+        if (!subId) continue;
+
+        await db.execute(sql`
+          INSERT INTO coin_subcategories (coin_id, subcategory_id)
+          VALUES (${coinId}::uuid, ${subId}::uuid)
+          ON CONFLICT DO NOTHING
+        `);
+      }
+    }
+    console.log("✅ Coin-category links updated\n");
+  } catch (error) {
+    console.error("❌ Coin-category linking failed:", error);
     throw error;
   }
 
