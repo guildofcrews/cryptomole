@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import Link from "next/link";
+import { Logo, LogoCaption } from "@/components/Logo";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "CryptoMole - Coin-Specific Crypto News Direct from the Source",
+  title: "cryptomole - Crypto News, Dug Up First",
   description:
     "Get authentic crypto news for AI projects directly from official team sources. No rumors, no speculation - just verified announcements from Render, Akash, Bittensor, NEAR, and more.",
   keywords: [
@@ -28,7 +25,7 @@ export const metadata: Metadata = {
     "blockchain news",
   ],
   openGraph: {
-    title: "CryptoMole - Direct-from-Source Crypto News",
+    title: "cryptomole - Crypto News, Dug Up First",
     description:
       "Authentic crypto news from official project teams. No rumors, just facts.",
     type: "website",
@@ -37,38 +34,32 @@ export const metadata: Metadata = {
 
 function Header() {
   return (
-    <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-      <nav className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center text-xl">
-            🕵️
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground group-hover:text-accent transition-colors">
-              CryptoMole
-            </h1>
-            <p className="text-xs text-muted">Direct from the source</p>
-          </div>
+    <header className="header">
+      <nav className="max-w-6xl mx-auto w-full flex items-center justify-between">
+        <Link href="/" className="group">
+          <Logo size="md" />
         </Link>
-        <div className="flex items-center gap-6">
-          <Link
-            href="/"
-            className="text-sm text-muted hover:text-foreground transition-colors"
-          >
-            News
+
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Link href="/" className="header-link px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
+            Feed
           </Link>
-          <Link
-            href="/about"
-            className="text-sm text-muted hover:text-foreground transition-colors"
-          >
-            About
+          <Link href="/coins" className="header-link px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
+            Coins
           </Link>
-          <Link
-            href="/sponsor"
-            className="text-sm text-muted hover:text-foreground transition-colors"
-          >
-            Sponsor
+          <Link href="/sources" className="header-link px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
+            Sources
           </Link>
+        </div>
+
+        <div className="hidden sm:block">
+          <button
+            className="btn-primary text-sm py-2 px-4 opacity-50 cursor-not-allowed"
+            disabled
+            title="Coming soon"
+          >
+            Get alerts
+          </button>
         </div>
       </nav>
     </header>
@@ -77,22 +68,42 @@ function Header() {
 
 function Footer() {
   return (
-    <footer className="border-t border-border mt-auto py-8 px-4">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted">
-        <div className="flex items-center gap-2">
-          <span>A</span>
-          <span className="font-semibold text-foreground">Guild of Crews</span>
-          <span>site</span>
+    <footer className="border-t border-chat-border mt-auto py-8 px-4 bg-chat-bg">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col items-center md:items-start gap-2">
+            <Logo size="sm" />
+            <span className="text-xs text-ui-muted">news, dug up first</span>
+          </div>
+
+          <div className="flex items-center gap-6 text-sm">
+            <Link
+              href="/about"
+              className="text-ui-muted hover:text-white transition-colors"
+            >
+              About
+            </Link>
+            <Link
+              href="/sources"
+              className="text-ui-muted hover:text-white transition-colors"
+            >
+              Sources
+            </Link>
+            <Link
+              href="/sponsor"
+              className="text-ui-muted hover:text-white transition-colors"
+            >
+              Sponsor
+            </Link>
+          </div>
+
+          <div className="flex flex-col items-center md:items-end gap-1">
+            <LogoCaption />
+            <p className="text-xs text-ui-muted">
+              © {new Date().getFullYear()} All rights reserved.
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-6">
-          <Link href="/about" className="hover:text-foreground transition-colors">
-            About
-          </Link>
-          <Link href="/sponsor" className="hover:text-foreground transition-colors">
-            Sponsor
-          </Link>
-        </div>
-        <p>© {new Date().getFullYear()} CryptoMole. All rights reserved.</p>
       </div>
     </footer>
   );
@@ -104,8 +115,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen flex flex-col bg-background text-foreground">
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen flex flex-col bg-chat-bg text-foreground antialiased">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

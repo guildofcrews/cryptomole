@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="coinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="coinShine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a5b4fc" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#a5b4fc" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Coin (partially visible, being dug up) -->
+  <circle cx="44" cy="18" r="14" fill="url(#coinGradient)"/>
+  <circle cx="44" cy="18" r="14" fill="url(#coinShine)"/>
+  <circle cx="44" cy="18" r="10" fill="none" stroke="#a5b4fc" stroke-width="1.5" opacity="0.6"/>
+  <text x="44" y="22" text-anchor="middle" fill="#a5b4fc" font-family="system-ui, sans-serif" font-size="10" font-weight="700">$</text>
+  
+  <!-- Mole body -->
+  <ellipse cx="28" cy="42" rx="22" ry="18" fill="#2d3548"/>
+  
+  <!-- Mole arm reaching for coin -->
+  <ellipse cx="42" cy="30" rx="8" ry="5" fill="#2d3548" transform="rotate(-30 42 30)"/>
+  <circle cx="48" cy="26" r="4" fill="#2d3548"/>
+  
+  <!-- Mole face -->
+  <ellipse cx="18" cy="38" rx="14" ry="12" fill="#3d4558"/>
+  
+  <!-- Snout -->
+  <ellipse cx="8" cy="40" rx="7" ry="5" fill="#4a5568"/>
+  
+  <!-- Nose (pink) -->
+  <ellipse cx="4" cy="40" rx="3.5" ry="2.8" fill="#fda4af"/>
+  
+  <!-- Eyes (small, moles have tiny eyes) -->
+  <circle cx="14" cy="35" r="2" fill="#0d1117"/>
+  <circle cx="13.5" cy="34.5" r="0.6" fill="#a5b4fc" opacity="0.6"/>
+  
+  <!-- Whiskers -->
+  <line x1="8" y1="38" x2="1" y2="35" stroke="#a5b4fc" stroke-width="0.8" opacity="0.4"/>
+  <line x1="8" y1="40" x2="1" y2="40" stroke="#a5b4fc" stroke-width="0.8" opacity="0.4"/>
+  <line x1="8" y1="42" x2="1" y2="45" stroke="#a5b4fc" stroke-width="0.8" opacity="0.4"/>
+  
+  <!-- Claws on reaching paw -->
+  <line x1="50" y1="24" x2="53" y2="21" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="51" y1="26" x2="55" y2="24" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="51" y1="28" x2="55" y2="28" stroke="#a5b4fc" stroke-width="1.2" stroke-linecap="round"/>
+</svg>
