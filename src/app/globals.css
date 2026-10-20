@@ -242,9 +242,17 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 24px;
+  height: 64px;
+  padding: 0 16px;
   background: #1e2938;
   border-bottom: 1px solid var(--chat-border);
+}
+
+@media (min-width: 640px) {
+  .header {
+    height: 80px;
+    padding: 0 24px;
+  }
 }
 
 .header-link {
