@@ -11,7 +11,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "cryptomole - Crypto News, Dug Up First",
+  title: "CryptoMole - Crypto News, Dug Up First",
   description:
     "Get authentic crypto news for AI projects directly from official team sources. No rumors, no speculation - just verified announcements from Render, Akash, Bittensor, NEAR, and more.",
   keywords: [
@@ -25,34 +25,45 @@ export const metadata: Metadata = {
     "blockchain news",
   ],
   openGraph: {
-    title: "cryptomole - Crypto News, Dug Up First",
+    title: "CryptoMole - Crypto News, Dug Up First",
     description:
       "Authentic crypto news from official project teams. No rumors, just facts.",
     type: "website",
   },
 };
 
+function NavLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className="nav-pill"
+    >
+      {children}
+    </Link>
+  );
+}
+
 function Header() {
   return (
     <header className="header">
       <nav className="max-w-6xl mx-auto w-full flex items-center justify-between">
-        <Link href="/" className="group">
-          <Logo size="md" />
+        <Link href="/" className="flex-shrink-0">
+          <Logo size="header" />
         </Link>
 
-        <div className="flex items-center gap-1 sm:gap-2">
-          <Link href="/" className="header-link px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
-            Feed
-          </Link>
-          <Link href="/coins" className="header-link px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
-            Coins
-          </Link>
-          <Link href="/sources" className="header-link px-3 py-2 rounded-xl hover:bg-white/5 transition-colors">
-            Sources
-          </Link>
+        <div className="flex items-center gap-1">
+          <NavLink href="/">Feed</NavLink>
+          <NavLink href="/coins">Coins</NavLink>
+          <NavLink href="/sources">Sources</NavLink>
         </div>
 
-        <div className="hidden sm:block">
+        <div className="hidden sm:block flex-shrink-0">
           <button
             className="btn-primary text-sm py-2 px-4 opacity-50 cursor-not-allowed"
             disabled
