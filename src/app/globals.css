@@ -275,6 +275,30 @@ body {
   border-radius: 9999px;
 }
 
+/* Nav pill links */
+.nav-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 150ms ease;
+}
+
+.nav-pill:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.nav-pill.active,
+.nav-pill[data-active="true"] {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.3);
+}
+
 /* Status pills */
 .status-success {
   background: rgba(34, 197, 94, 0.15);
