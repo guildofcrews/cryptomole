@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getCoinBySlug, getApprovedPostsByCoin } from "@/lib/queries";
 import { PostCard } from "@/components/PostCard";
 import { CoinLinks } from "@/components/CoinCard";
+import { MarketData } from "@/components/MarketData";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
@@ -134,6 +135,10 @@ export default async function CoinPage({
         )}
         <CoinLinks coin={coin} />
       </header>
+
+      <Suspense fallback={null}>
+        <MarketData coingeckoId={coin.coingeckoId} />
+      </Suspense>
 
       <section>
         <h2 className="text-lg font-semibold text-white mb-4">
