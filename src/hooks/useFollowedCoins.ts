@@ -4,7 +4,7 @@ import { useCallback, useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "cryptomole_followed_coins";
 
-const DEFAULT_COINS = ["bitcoin", "ethereum", "solana", "tether", "usdc"];
+const DEFAULT_COINS = ["bitcoin", "ethereum", "solana", "sui", "chainlink"];
 
 function getStoredCoins(): string[] {
   if (typeof window === "undefined") return DEFAULT_COINS;
