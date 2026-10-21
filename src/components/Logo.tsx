@@ -11,7 +11,7 @@ const sizes = {
   sm: { mark: 28, text: "text-base", tagline: "text-[9px]" },
   md: { mark: 36, text: "text-lg", tagline: "text-[10px]" },
   lg: { mark: 48, text: "text-xl", tagline: "text-xs" },
-  header: { mark: 56, markMobile: 44, text: "text-[28px]", textMobile: "text-[22px]", tagline: "text-[10px]" },
+  header: { mark: 48, markMobile: 40, text: "text-[24px]", textMobile: "text-[20px]", tagline: "text-[10px]" },
 };
 
 function MoleMark({ size = 36, className = "" }: { size?: number; className?: string }) {
@@ -29,27 +29,32 @@ function MoleMark({ size = 36, className = "" }: { size?: number; className?: st
 
 function HeaderLogo() {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2.5">
       <Image
         src="/brand/mole-icon.svg"
         alt="CryptoMole"
-        width={56}
-        height={56}
+        width={44}
+        height={44}
         className="flex-shrink-0 hidden sm:block"
         priority
       />
       <Image
         src="/brand/mole-icon.svg"
         alt="CryptoMole"
-        width={44}
-        height={44}
+        width={36}
+        height={36}
         className="flex-shrink-0 sm:hidden"
         priority
       />
-      <span className="font-bold tracking-tight text-[22px] sm:text-[28px]">
-        <span style={{ color: "#F5EFE6" }}>Crypto</span>
-        <span style={{ color: "#F2B33D" }}>Mole</span>
-      </span>
+      <div className="flex flex-col">
+        <span className="font-bold tracking-tight text-[18px] sm:text-[22px] lowercase leading-tight">
+          <span className="text-white">crypto</span>
+          <span className="text-ui-accent">mole</span>
+        </span>
+        <span className="text-[8px] sm:text-[9px] font-mono tracking-widest text-ui-muted uppercase">
+          cryptomole.ai
+        </span>
+      </div>
     </div>
   );
 }
@@ -73,13 +78,13 @@ export function Logo({
   if (variant === "wordmark") {
     return (
       <div className={`flex flex-col ${className}`}>
-        <span className={`${s.text} font-bold tracking-tight`}>
-          <span style={{ color: "#F5EFE6" }}>Crypto</span>
-          <span style={{ color: "#F2B33D" }}>Mole</span>
+        <span className={`${s.text} font-bold tracking-tight lowercase`}>
+          <span className="text-white">crypto</span>
+          <span className="text-ui-accent">mole</span>
         </span>
         {showTagline && (
-          <span className={`${s.tagline} text-ui-muted tracking-wide`}>
-            news, dug up first
+          <span className={`${s.tagline} font-mono tracking-widest text-ui-muted uppercase`}>
+            cryptomole.ai
           </span>
         )}
       </div>
@@ -87,12 +92,17 @@ export function Logo({
   }
 
   return (
-    <div className={`flex items-center gap-2.5 ${className}`}>
+    <div className={`flex items-center gap-2 ${className}`}>
       <MoleMark size={s.mark} />
-      <span className={`${s.text} font-bold tracking-tight`}>
-        <span style={{ color: "#F5EFE6" }}>Crypto</span>
-        <span style={{ color: "#F2B33D" }}>Mole</span>
-      </span>
+      <div className="flex flex-col">
+        <span className={`${s.text} font-bold tracking-tight lowercase leading-tight`}>
+          <span className="text-white">crypto</span>
+          <span className="text-ui-accent">mole</span>
+        </span>
+        <span className={`${s.tagline} font-mono tracking-widest text-ui-muted uppercase`}>
+          cryptomole.ai
+        </span>
+      </div>
     </div>
   );
 }
@@ -100,11 +110,11 @@ export function Logo({
 export function LogoCaption({ className = "" }: { className?: string }) {
   return (
     <span
-      className={`text-[10px] font-semibold tracking-widest uppercase ${className}`}
+      className={`text-[9px] font-mono tracking-widest uppercase ${className}`}
     >
-      <span style={{ color: "#F5EFE6" }}>CRYPTO</span>
-      <span style={{ color: "#F2B33D" }}>MOLE</span>
-      <span className="text-ui-muted">.AI</span>
+      <span className="text-white">crypto</span>
+      <span className="text-ui-accent">mole</span>
+      <span className="text-ui-muted">.ai</span>
     </span>
   );
 }
