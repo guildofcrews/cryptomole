@@ -110,7 +110,10 @@ export function CoinIntelCard({ coin, market, headlines }: CoinIntelCardProps) {
                 <span className="text-sm text-ui-muted group-hover/headline:text-white transition-colors line-clamp-2 flex-1">
                   {headline.title}
                 </span>
-                <span className="text-xs text-ui-muted flex-shrink-0">
+                <span
+                  className="text-xs text-ui-muted flex-shrink-0"
+                  suppressHydrationWarning
+                >
                   {relativeTime(headline.publishedAt)}
                 </span>
               </Link>

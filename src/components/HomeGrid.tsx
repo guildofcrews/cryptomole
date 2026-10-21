@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { useFollowedCoins } from "@/hooks/useFollowedCoins";
 import { CoinIntelCard } from "./CoinIntelCard";
 import { ManageCoins } from "./ManageCoins";
@@ -43,41 +43,81 @@ export function HomeGrid({ allCoins, categories }: HomeGridProps) {
   const { followedSlugs, isLoaded } = useFollowedCoins();
   const [marketData, setMarketData] = useState<Record<string, MarketData>>({});
   const [headlines, setHeadlines] = useState<Record<string, Headline[]>>({});
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [fetchCompleted, setFetchCompleted] = useState(false);
+  const fetchVersionRef = useRef(0);
 
-  const followedCoins = allCoins.filter((c) => followedSlugs.includes(c.slug));
+  const slugsKey = followedSlugs.join(",");
+  const slugsCount = followedSlugs.length;
 
-  useEffect(() => {
-    if (!isLoaded || followedSlugs.length === 0) return;
+  const followedCoins = useMemo(
+    () => allCoins.filter((c) => followedSlugs.includes(c.slug)),
+    [allCoins, followedSlugs]
+  );
 
-    const fetchData = async () => {
-      const coingeckoIds = followedCoins
+  const coingeckoIds = useMemo(
+    () =>
+      followedCoins
         .filter((c) => c.coingeckoId)
         .map((c) => c.coingeckoId)
-        .join(",");
+        .join(","),
+    [followedCoins]
+  );
 
-      const [marketRes, headlinesRes] = await Promise.all([
-        coingeckoIds
-          ? fetch(`/api/market?ids=${coingeckoIds}`).then((r) =>
-              r.ok ? r.json() : { coins: [] }
-            )
-          : Promise.resolve({ coins: [] }),
-        fetch(`/api/headlines?slugs=${followedSlugs.join(",")}&limit=5`).then(
-          (r) => (r.ok ? r.json() : { headlines: {} })
-        ),
-      ]);
+  useEffect(() => {
+    if (!isLoaded) return;
 
-      const marketMap: Record<string, MarketData> = {};
-      for (const m of marketRes.coins || []) {
-        marketMap[m.id] = m;
+    const currentVersion = ++fetchVersionRef.current;
+
+    if (slugsCount === 0) {
+      queueMicrotask(() => {
+        if (fetchVersionRef.current === currentVersion) {
+          setMarketData({});
+          setHeadlines({});
+          setFetchCompleted(true);
+        }
+      });
+      return;
+    }
+
+    queueMicrotask(() => {
+      if (fetchVersionRef.current === currentVersion) {
+        setFetchCompleted(false);
       }
-      setMarketData(marketMap);
-      setHeadlines(headlinesRes.headlines || {});
-      setIsDataLoaded(true);
+    });
+
+    const fetchData = async () => {
+      try {
+        const [marketRes, headlinesRes] = await Promise.all([
+          coingeckoIds
+            ? fetch(`/api/market?ids=${coingeckoIds}`).then((r) =>
+                r.ok ? r.json() : { coins: [] }
+              )
+            : Promise.resolve({ coins: [] }),
+          fetch(`/api/headlines?slugs=${slugsKey}&limit=5`).then((r) =>
+            r.ok ? r.json() : { headlines: {} }
+          ),
+        ]);
+
+        if (fetchVersionRef.current !== currentVersion) return;
+
+        const marketMap: Record<string, MarketData> = {};
+        for (const m of marketRes.coins || []) {
+          marketMap[m.id] = m;
+        }
+        setMarketData(marketMap);
+        setHeadlines(headlinesRes.headlines || {});
+        setFetchCompleted(true);
+      } catch {
+        if (fetchVersionRef.current === currentVersion) {
+          setFetchCompleted(true);
+        }
+      }
     };
 
     fetchData();
-  }, [isLoaded, followedSlugs, followedCoins]);
+  }, [isLoaded, slugsKey, slugsCount, coingeckoIds]);
+
+  const isDataLoaded = !isLoaded || slugsCount === 0 || fetchCompleted;
 
   if (!isLoaded) {
     return (
