@@ -85,6 +85,7 @@ function Footer() {
           <div className="flex flex-col items-center md:items-start gap-2">
             <Logo size="sm" />
             <span className="text-xs text-ui-muted">news, dug up first</span>
+            <span className="badge-official text-[10px] mt-1">Official sources only</span>
           </div>
 
           <div className="flex items-center gap-6 text-sm">

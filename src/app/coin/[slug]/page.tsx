@@ -5,6 +5,7 @@ import { getCoinBySlug, getApprovedPostsByCoin } from "@/lib/queries";
 import { PostCard } from "@/components/PostCard";
 import { CoinLinks } from "@/components/CoinCard";
 import { MarketData } from "@/components/MarketData";
+import { FollowButton } from "@/components/FollowButton";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
@@ -102,16 +103,19 @@ export default async function CoinPage({
       </Link>
 
       <header className="mb-8">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="coin-logo w-16 h-16 text-2xl">
-            {coin.ticker.slice(0, 2)}
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex items-center gap-4">
+            <div className="coin-logo w-16 h-16 text-2xl">
+              {coin.ticker.slice(0, 2)}
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-white">
+                {coin.name}
+              </h1>
+              <span className="ticker-badge text-xs mt-1">{coin.ticker}</span>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-white">
-              {coin.name}
-            </h1>
-            <span className="ticker-badge text-xs mt-1">{coin.ticker}</span>
-          </div>
+          <FollowButton slug={coin.slug} showLabel />
         </div>
 
         {coin.categories.length > 0 && (
