@@ -8,20 +8,22 @@ interface LogoProps {
 }
 
 const sizes = {
-  sm: { mark: 28, text: "text-base", tagline: "text-[9px]" },
-  md: { mark: 36, text: "text-lg", tagline: "text-[10px]" },
-  lg: { mark: 48, text: "text-xl", tagline: "text-xs" },
-  header: { mark: 48, markMobile: 40, text: "text-[24px]", textMobile: "text-[20px]", tagline: "text-[10px]" },
+  sm: { markHeight: 24, text: "text-base", tagline: "text-[9px]" },
+  md: { markHeight: 32, text: "text-lg", tagline: "text-[10px]" },
+  lg: { markHeight: 42, text: "text-xl", tagline: "text-xs" },
+  header: { markHeight: 36, markHeightMobile: 30, text: "text-[24px]", textMobile: "text-[20px]", tagline: "text-[10px]" },
 };
 
-function MoleMark({ size = 36, className = "" }: { size?: number; className?: string }) {
+function MoleMark({ height = 32, className = "" }: { height?: number; className?: string }) {
+  const width = Math.round(height * (48 / 62));
   return (
     <Image
-      src="/brand/mole-icon.svg"
+      src="/brand/mole-coin-icon.png"
       alt="CryptoMole"
-      width={size}
-      height={size}
+      width={width}
+      height={height}
       className={`flex-shrink-0 ${className}`}
+      unoptimized
       priority
     />
   );
@@ -31,19 +33,21 @@ function HeaderLogo() {
   return (
     <div className="flex items-center gap-2.5">
       <Image
-        src="/brand/mole-icon.svg"
+        src="/brand/mole-coin-icon.png"
         alt="CryptoMole"
-        width={44}
-        height={44}
+        width={28}
+        height={36}
         className="flex-shrink-0 hidden sm:block"
+        unoptimized
         priority
       />
       <Image
-        src="/brand/mole-icon.svg"
+        src="/brand/mole-coin-icon.png"
         alt="CryptoMole"
-        width={36}
-        height={36}
+        width={23}
+        height={30}
         className="flex-shrink-0 sm:hidden"
+        unoptimized
         priority
       />
       <div className="flex flex-col">
@@ -72,7 +76,7 @@ export function Logo({
   const s = sizes[size];
 
   if (variant === "mark") {
-    return <MoleMark size={s.mark} />;
+    return <MoleMark height={s.markHeight} />;
   }
 
   if (variant === "wordmark") {
@@ -93,7 +97,7 @@ export function Logo({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <MoleMark size={s.mark} />
+      <MoleMark height={s.markHeight} />
       <div className="flex flex-col">
         <span className={`${s.text} font-bold tracking-tight lowercase leading-tight`}>
           <span className="text-white">crypto</span>
