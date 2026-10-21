@@ -1,12 +1,14 @@
 import Link from "next/link";
 import type { Coin } from "@/db";
+import { FollowButton } from "./FollowButton";
 
 interface CoinCardProps {
   coin: Coin;
   variant?: "card" | "chip" | "row";
+  showFollow?: boolean;
 }
 
-export function CoinCard({ coin, variant = "card" }: CoinCardProps) {
+export function CoinCard({ coin, variant = "card", showFollow = false }: CoinCardProps) {
   if (variant === "chip") {
     return (
       <Link
@@ -23,33 +25,34 @@ export function CoinCard({ coin, variant = "card" }: CoinCardProps) {
 
   if (variant === "row") {
     return (
-      <Link
-        href={`/coin/${coin.slug}`}
-        className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] hover:ring-1 hover:ring-white/10 transition-all group"
-      >
-        <div className="coin-logo w-8 h-8 text-xs">
-          {coin.ticker.slice(0, 2)}
-        </div>
-        <div className="flex-1 min-w-0">
-          <span className="text-sm font-medium text-white group-hover:text-ui-accent transition-colors">
+      <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] hover:ring-1 hover:ring-white/10 transition-all group">
+        <Link href={`/coin/${coin.slug}`} className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="coin-logo w-8 h-8 text-xs">
+            {coin.ticker.slice(0, 2)}
+          </div>
+          <span className="text-sm font-medium text-white group-hover:text-ui-accent transition-colors truncate">
             {coin.name}
           </span>
-        </div>
+        </Link>
         <span className="ticker-badge">{coin.ticker}</span>
-      </Link>
+        {showFollow && <FollowButton slug={coin.slug} size="sm" />}
+      </div>
     );
   }
 
   return (
-    <Link href={`/coin/${coin.slug}`} className="card p-5 block group">
-      <div className="flex items-center gap-3 mb-3">
-        <div className="coin-logo">{coin.ticker.slice(0, 2)}</div>
-        <div>
-          <h3 className="font-semibold text-white group-hover:text-ui-accent transition-colors">
-            {coin.name}
-          </h3>
-          <span className="ticker-badge mt-1">{coin.ticker}</span>
-        </div>
+    <div className="card p-5 group">
+      <div className="flex items-start justify-between mb-3">
+        <Link href={`/coin/${coin.slug}`} className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="coin-logo">{coin.ticker.slice(0, 2)}</div>
+          <div className="min-w-0">
+            <h3 className="font-semibold text-white group-hover:text-ui-accent transition-colors truncate">
+              {coin.name}
+            </h3>
+            <span className="ticker-badge mt-1">{coin.ticker}</span>
+          </div>
+        </Link>
+        {showFollow && <FollowButton slug={coin.slug} size="sm" />}
       </div>
       {coin.description && (
         <p className="text-sm text-ui-muted line-clamp-2 mb-3">
@@ -93,7 +96,7 @@ export function CoinCard({ coin, variant = "card" }: CoinCardProps) {
           </span>
         )}
       </div>
-    </Link>
+    </div>
   );
 }
 

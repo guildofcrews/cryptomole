@@ -96,7 +96,7 @@ async function CoinsGrid({ categorySlug }: { categorySlug?: string }) {
             style={{ animationDelay: `${index * 30}ms` }}
             className="animate-fade-in"
           >
-            <CoinCard coin={coin} variant="card" />
+            <CoinCard coin={coin} variant="card" showFollow />
           </div>
         ))}
       </div>
