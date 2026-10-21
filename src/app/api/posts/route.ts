@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { posts, coins, type NewPost } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { posts, coins, postCoins, type NewPost, VALID_TOPICS } from "@/db/schema";
+import { eq, inArray, and } from "drizzle-orm";
 
 type ApiKeyValidation = 
   | { valid: true }
@@ -61,17 +61,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       coinSlug,
+      coinSlugs,
       title,
       summary,
       body: postBody,
       sourceType,
       sourceUrl,
       publishedAt,
+      topics,
     } = body;
 
-    if (!coinSlug || !title) {
+    const primarySlug = coinSlug || (coinSlugs && coinSlugs[0]);
+    if (!primarySlug || !title) {
       return NextResponse.json(
-        { error: "Missing required fields: coinSlug and title are required" },
+        { error: "Missing required fields: coinSlug (or coinSlugs[0]) and title are required" },
         { status: 400 }
       );
     }
@@ -84,20 +87,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (topics && Array.isArray(topics)) {
+      const invalidTopics = topics.filter((t: string) => !VALID_TOPICS.includes(t as typeof VALID_TOPICS[number]));
+      if (invalidTopics.length > 0) {
+        return NextResponse.json(
+          { error: `Invalid topics: ${invalidTopics.join(", ")}. Must be one of: ${VALID_TOPICS.join(", ")}` },
+          { status: 400 }
+        );
+      }
+    }
+
     const sql = neon(connectionString);
     const db = drizzle(sql);
 
     const coinResults = await db
       .select()
       .from(coins)
-      .where(eq(coins.slug, coinSlug));
+      .where(eq(coins.slug, primarySlug));
     const coin = coinResults[0];
 
     if (!coin) {
       return NextResponse.json(
-        { error: `Coin with slug '${coinSlug}' not found` },
+        { error: `Coin with slug '${primarySlug}' not found` },
         { status: 404 }
       );
+    }
+
+    const allSlugs = coinSlugs && Array.isArray(coinSlugs) ? coinSlugs : [primarySlug];
+    const additionalSlugs = allSlugs.filter((s: string) => s !== primarySlug);
+    
+    let additionalCoins: { id: string; slug: string }[] = [];
+    if (additionalSlugs.length > 0) {
+      additionalCoins = await db
+        .select({ id: coins.id, slug: coins.slug })
+        .from(coins)
+        .where(inArray(coins.slug, additionalSlugs));
+      
+      const foundSlugs = additionalCoins.map(c => c.slug);
+      const missingSlugs = additionalSlugs.filter((s: string) => !foundSlugs.includes(s));
+      if (missingSlugs.length > 0) {
+        return NextResponse.json(
+          { error: `Coins not found: ${missingSlugs.join(", ")}` },
+          { status: 404 }
+        );
+      }
     }
 
     const newPost: NewPost = {
@@ -109,10 +142,19 @@ export async function POST(request: NextRequest) {
       sourceUrl: sourceUrl || null,
       publishedAt: publishedAt ? new Date(publishedAt) : new Date(),
       status: "draft",
+      topics: topics && Array.isArray(topics) && topics.length > 0 ? topics : null,
     };
 
     const insertedPosts = await db.insert(posts).values(newPost).returning();
     const insertedPost = insertedPosts[0];
+
+    if (additionalCoins.length > 0) {
+      const postCoinLinks = additionalCoins.map(c => ({
+        postId: insertedPost.id,
+        coinId: c.id,
+      }));
+      await db.insert(postCoins).values(postCoinLinks);
+    }
 
     return NextResponse.json(
       {
@@ -123,6 +165,8 @@ export async function POST(request: NextRequest) {
           title: insertedPost.title,
           status: insertedPost.status,
           coinSlug: coin.slug,
+          coinSlugs: allSlugs,
+          topics: insertedPost.topics,
         },
       },
       { status: 201 }
@@ -159,6 +203,17 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const status = searchParams.get("status");
+    const coinSlug = searchParams.get("coin");
+
+    const conditions: ReturnType<typeof eq>[] = [];
+    
+    if (status === "draft" || status === "approved" || status === "rejected") {
+      conditions.push(eq(posts.status, status));
+    }
+    
+    if (coinSlug) {
+      conditions.push(eq(coins.slug, coinSlug));
+    }
 
     let query = db
       .select({
@@ -169,6 +224,7 @@ export async function GET(request: NextRequest) {
         sourceUrl: posts.sourceUrl,
         publishedAt: posts.publishedAt,
         status: posts.status,
+        topics: posts.topics,
         createdAt: posts.createdAt,
         coinSlug: coins.slug,
         coinName: coins.name,
@@ -177,8 +233,8 @@ export async function GET(request: NextRequest) {
       .from(posts)
       .innerJoin(coins, eq(posts.coinId, coins.id));
 
-    if (status === "draft" || status === "approved" || status === "rejected") {
-      query = query.where(eq(posts.status, status)) as typeof query;
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as typeof query;
     }
 
     const results = await query;

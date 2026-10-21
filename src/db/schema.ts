@@ -16,6 +16,16 @@ export const sourceTypeEnum = pgEnum("source_type", [
   "other",
 ]);
 
+export const coinClassEnum = pgEnum("coin_class", [
+  "project",
+  "macro",
+  "macro+project",
+  "issuer",
+]);
+
+export const VALID_TOPICS = ["regulation", "etf", "legislation", "stablecoin-reg"] as const;
+export type PostTopic = (typeof VALID_TOPICS)[number];
+
 export const coins = pgTable("coins", {
   id: uuid("id").primaryKey().defaultRandom(),
   slug: text("slug").notNull().unique(),
@@ -28,6 +38,7 @@ export const coins = pgTable("coins", {
   telegramUrl: text("telegram_url"),
   logoUrl: text("logo_url"),
   coingeckoId: text("coingecko_id"),
+  coinClass: coinClassEnum("coin_class").default("project"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -90,14 +101,29 @@ export const posts = pgTable("posts", {
   sourceUrl: text("source_url"),
   publishedAt: timestamp("published_at"),
   status: postStatusEnum("status").notNull().default("draft"),
+  topics: text("topics").array(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
+
+export const postCoins = pgTable(
+  "post_coins",
+  {
+    postId: uuid("post_id")
+      .notNull()
+      .references(() => posts.id, { onDelete: "cascade" }),
+    coinId: uuid("coin_id")
+      .notNull()
+      .references(() => coins.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.postId, t.coinId] })]
+);
 
 export const coinsRelations = relations(coins, ({ many }) => ({
   posts: many(posts),
   coinCategories: many(coinCategories),
   coinSubcategories: many(coinSubcategories),
+  postCoins: many(postCoins),
 }));
 
 export const categoriesRelations = relations(categories, ({ many }) => ({
@@ -135,9 +161,21 @@ export const coinSubcategoriesRelations = relations(coinSubcategories, ({ one })
   }),
 }));
 
-export const postsRelations = relations(posts, ({ one }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
   coin: one(coins, {
     fields: [posts.coinId],
+    references: [coins.id],
+  }),
+  postCoins: many(postCoins),
+}));
+
+export const postCoinsRelations = relations(postCoins, ({ one }) => ({
+  post: one(posts, {
+    fields: [postCoins.postId],
+    references: [posts.id],
+  }),
+  coin: one(coins, {
+    fields: [postCoins.coinId],
     references: [coins.id],
   }),
 }));
@@ -150,3 +188,6 @@ export type Subcategory = typeof subcategories.$inferSelect;
 export type NewSubcategory = typeof subcategories.$inferInsert;
 export type Post = typeof posts.$inferSelect;
 export type NewPost = typeof posts.$inferInsert;
+export type PostCoin = typeof postCoins.$inferSelect;
+export type NewPostCoin = typeof postCoins.$inferInsert;
+export type CoinClass = typeof coinClassEnum.enumValues[number];

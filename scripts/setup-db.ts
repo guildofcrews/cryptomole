@@ -1,7 +1,7 @@
 /**
  * Database setup script for Vercel builds.
  * - Applies schema using raw SQL (idempotent)
- * - Upserts 50 coins, 11 categories, and their relationships
+ * - Upserts 70 coins, 13 categories, and their relationships
  * - Never deletes existing posts
  * - Uses DATABASE_URL_UNPOOLED for migrations (required for DDL)
  */
@@ -49,6 +49,14 @@ async function setupDatabase() {
     `);
 
     await db.execute(sql`
+      DO $$ BEGIN
+        CREATE TYPE coin_class AS ENUM ('project', 'macro', 'macro+project', 'issuer');
+      EXCEPTION
+        WHEN duplicate_object THEN null;
+      END $$;
+    `);
+
+    await db.execute(sql`
       CREATE TABLE IF NOT EXISTS coins (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         slug TEXT NOT NULL UNIQUE,
@@ -68,6 +76,10 @@ async function setupDatabase() {
 
     await db.execute(sql`
       ALTER TABLE coins ADD COLUMN IF NOT EXISTS coingecko_id TEXT;
+    `);
+
+    await db.execute(sql`
+      ALTER TABLE coins ADD COLUMN IF NOT EXISTS coin_class coin_class DEFAULT 'project';
     `);
 
     await db.execute(sql`
@@ -119,8 +131,21 @@ async function setupDatabase() {
         source_url TEXT,
         published_at TIMESTAMP,
         status post_status NOT NULL DEFAULT 'draft',
+        topics TEXT[],
         created_at TIMESTAMP DEFAULT NOW() NOT NULL,
         updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    await db.execute(sql`
+      ALTER TABLE posts ADD COLUMN IF NOT EXISTS topics TEXT[];
+    `);
+
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS post_coins (
+        post_id UUID NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+        coin_id UUID NOT NULL REFERENCES coins(id) ON DELETE CASCADE,
+        PRIMARY KEY (post_id, coin_id)
       );
     `);
 
@@ -176,7 +201,7 @@ async function setupDatabase() {
   try {
     for (const coin of seedCoins) {
       const result = await db.execute(sql`
-        INSERT INTO coins (slug, name, ticker, description, website, x_handle, coingecko_id)
+        INSERT INTO coins (slug, name, ticker, description, website, x_handle, coingecko_id, coin_class)
         VALUES (
           ${coin.slug},
           ${coin.name},
@@ -184,7 +209,8 @@ async function setupDatabase() {
           ${coin.description || null},
           ${coin.website},
           ${coin.xHandle},
-          ${coin.coingeckoId}
+          ${coin.coingeckoId},
+          ${coin.coinClass}::coin_class
         )
         ON CONFLICT (slug) DO UPDATE SET
           name = EXCLUDED.name,
@@ -193,6 +219,7 @@ async function setupDatabase() {
           website = COALESCE(EXCLUDED.website, coins.website),
           x_handle = COALESCE(EXCLUDED.x_handle, coins.x_handle),
           coingecko_id = COALESCE(EXCLUDED.coingecko_id, coins.coingecko_id),
+          coin_class = EXCLUDED.coin_class,
           updated_at = NOW()
         RETURNING id
       `);
