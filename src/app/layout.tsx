@@ -52,18 +52,18 @@ function NavLink({
 function Header() {
   return (
     <header className="header">
-      <nav className="max-w-6xl mx-auto w-full flex items-center justify-between">
-        <Link href="/" className="flex-shrink-0">
+      <nav className="max-w-6xl mx-auto w-full grid grid-cols-3 items-center">
+        <Link href="/" className="justify-self-start">
           <Logo size="header" />
         </Link>
 
-        <div className="flex items-center gap-1">
+        <div className="flex items-center justify-center gap-1">
           <NavLink href="/">Feed</NavLink>
           <NavLink href="/coins">Coins</NavLink>
           <NavLink href="/sources">Sources</NavLink>
         </div>
 
-        <div className="hidden sm:block flex-shrink-0">
+        <div className="justify-self-end hidden sm:block">
           <button
             className="btn-primary text-sm py-2 px-4 opacity-50 cursor-not-allowed"
             disabled
@@ -72,6 +72,7 @@ function Header() {
             Get alerts
           </button>
         </div>
+        <div className="justify-self-end sm:hidden" />
       </nav>
     </header>
   );
@@ -79,16 +80,15 @@ function Header() {
 
 function Footer() {
   return (
-    <footer className="border-t border-chat-border mt-auto py-8 px-4 bg-chat-bg">
+    <footer className="border-t border-chat-border mt-auto py-4 px-4 bg-chat-bg">
       <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex flex-col items-center md:items-start gap-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
             <Logo size="sm" />
-            <span className="text-xs text-ui-muted">news, dug up first</span>
-            <span className="badge-official text-[10px] mt-1">Official sources only</span>
+            <span className="text-xs text-ui-muted hidden sm:inline">news, dug up first</span>
           </div>
 
-          <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-4 sm:gap-6 text-sm">
             <Link
               href="/about"
               className="text-ui-muted hover:text-white transition-colors"
@@ -109,11 +109,11 @@ function Footer() {
             </Link>
           </div>
 
-          <div className="flex flex-col items-center md:items-end gap-1">
+          <div className="flex items-center gap-3">
             <LogoCaption />
-            <p className="text-xs text-ui-muted">
-              © {new Date().getFullYear()} All rights reserved.
-            </p>
+            <span className="text-xs text-ui-muted">
+              © {new Date().getFullYear()}
+            </span>
           </div>
         </div>
       </div>
