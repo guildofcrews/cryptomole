@@ -7,7 +7,6 @@ import {
   getCoinsBySubcategory,
   getApprovedPostsByCategory,
   getApprovedPostsBySubcategory,
-  getSubcategoryBySlug,
 } from "@/lib/queries";
 import { PostCard } from "@/components/PostCard";
 import { CoinCard } from "@/components/CoinCard";

@@ -5,6 +5,7 @@ import {
   getCategories,
   getApprovedPosts,
   getApprovedPostsByCategory,
+  getApprovedPostsWithTopics,
 } from "@/lib/queries";
 import { PostCard } from "@/components/PostCard";
 import { CoinCard } from "@/components/CoinCard";
@@ -31,6 +32,16 @@ async function CategoryChips({ activeCategory }: { activeCategory?: string }) {
       >
         All
       </Link>
+      <Link
+        href="/?category=regulation"
+        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+          activeCategory === "regulation"
+            ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white"
+            : "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 hover:text-amber-300"
+        }`}
+      >
+        Regulation
+      </Link>
       {categories.map((cat) => (
         <Link
           key={cat.slug}
@@ -49,9 +60,14 @@ async function CategoryChips({ activeCategory }: { activeCategory?: string }) {
 }
 
 async function PostsFeed({ categorySlug }: { categorySlug?: string }) {
-  const posts = categorySlug
-    ? await getApprovedPostsByCategory(categorySlug, 30)
-    : await getApprovedPosts(30);
+  let posts;
+  if (categorySlug === "regulation") {
+    posts = await getApprovedPostsWithTopics(30);
+  } else if (categorySlug) {
+    posts = await getApprovedPostsByCategory(categorySlug, 30);
+  } else {
+    posts = await getApprovedPosts(30);
+  }
 
   if (posts.length === 0) {
     return (

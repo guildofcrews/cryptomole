@@ -1,6 +1,6 @@
 /**
- * Seed data for 50 coins and 11 categories.
- * Generated from coins-expanded.json (2026-10-19).
+ * Seed data for 70 coins and 13 categories.
+ * Generated from coins-expanded.json (2026-10-19) + coins-new-20.json (2026-10-21).
  */
 
 export interface SeedCategory {
@@ -9,6 +9,8 @@ export interface SeedCategory {
   description: string;
   subcategories: { slug: string; name: string }[];
 }
+
+export type CoinClass = "project" | "macro" | "macro+project" | "issuer";
 
 export interface SeedCoin {
   slug: string;
@@ -20,6 +22,7 @@ export interface SeedCoin {
   coingeckoId: string | null;
   categories: string[];
   subcategories: string[];
+  coinClass: CoinClass;
 }
 
 export const seedCategories: SeedCategory[] = [
@@ -48,8 +51,10 @@ export const seedCategories: SeedCategory[] = [
       { slug: "dex", name: "DEX" },
       { slug: "lending", name: "Lending" },
       { slug: "derivatives-perps", name: "Derivatives/perps" },
+      { slug: "perps", name: "Perps" },
       { slug: "yield", name: "Yield" },
       { slug: "liquid-staking", name: "Liquid staking" },
+      { slug: "restaking", name: "Restaking" },
     ],
   },
   {
@@ -106,6 +111,18 @@ export const seedCategories: SeedCategory[] = [
     description: "Decentralized storage and data indexing.",
     subcategories: [],
   },
+  {
+    slug: "l1-l2",
+    name: "Layer 1 / Layer 2",
+    description: "Base layer and scaling blockchains.",
+    subcategories: [],
+  },
+  {
+    slug: "oracles-interop",
+    name: "Oracles & Interop",
+    description: "Oracle networks and cross-chain interoperability protocols.",
+    subcategories: [],
+  },
 ];
 
 export const seedCoins: SeedCoin[] = [
@@ -119,6 +136,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "render-token",
     categories: ["ai", "depin"],
     subcategories: ["ai-compute"],
+    coinClass: "project",
   },
   {
     slug: "akash",
@@ -130,6 +148,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "akash-network",
     categories: ["ai", "depin"],
     subcategories: ["ai-compute"],
+    coinClass: "project",
   },
   {
     slug: "venice",
@@ -141,6 +160,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "venice-token",
     categories: ["ai"],
     subcategories: ["ai-models"],
+    coinClass: "project",
   },
   {
     slug: "ionet",
@@ -152,6 +172,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "io",
     categories: ["ai", "depin"],
     subcategories: ["ai-compute"],
+    coinClass: "project",
   },
   {
     slug: "bittensor",
@@ -163,6 +184,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "bittensor",
     categories: ["ai"],
     subcategories: ["ai-models"],
+    coinClass: "project",
   },
   {
     slug: "fetch",
@@ -174,6 +196,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "fetch-ai",
     categories: ["ai"],
     subcategories: ["ai-agents"],
+    coinClass: "project",
   },
   {
     slug: "virtuals",
@@ -185,6 +208,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "virtual-protocol",
     categories: ["ai"],
     subcategories: ["ai-agents"],
+    coinClass: "project",
   },
   {
     slug: "near",
@@ -196,6 +220,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "near",
     categories: ["ai"],
     subcategories: ["ai-models"],
+    coinClass: "project",
   },
   {
     slug: "aethir",
@@ -207,6 +232,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "aethir",
     categories: ["ai", "depin"],
     subcategories: ["ai-compute"],
+    coinClass: "project",
   },
   {
     slug: "elizaos",
@@ -218,6 +244,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "elizaos",
     categories: ["ai"],
     subcategories: ["ai-agents"],
+    coinClass: "project",
   },
   {
     slug: "filecoin",
@@ -229,6 +256,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "filecoin",
     categories: ["depin", "storage-data"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "helium",
@@ -240,6 +268,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "helium",
     categories: ["depin"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "arweave",
@@ -251,6 +280,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "arweave",
     categories: ["depin", "storage-data"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "grass",
@@ -262,6 +292,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "grass",
     categories: ["depin", "ai"],
     subcategories: ["ai-data"],
+    coinClass: "project",
   },
   {
     slug: "aave",
@@ -273,6 +304,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "aave",
     categories: ["defi"],
     subcategories: ["lending"],
+    coinClass: "project",
   },
   {
     slug: "uniswap",
@@ -284,6 +316,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "uniswap",
     categories: ["defi"],
     subcategories: ["dex"],
+    coinClass: "project",
   },
   {
     slug: "sky",
@@ -295,6 +328,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "sky",
     categories: ["defi", "stablecoins"],
     subcategories: ["lending", "stablecoin-issuer"],
+    coinClass: "issuer",
   },
   {
     slug: "curve",
@@ -306,6 +340,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "curve-dao-token",
     categories: ["defi"],
     subcategories: ["dex", "stablecoin-issuer"],
+    coinClass: "project",
   },
   {
     slug: "pendle",
@@ -317,6 +352,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "pendle",
     categories: ["defi"],
     subcategories: ["yield"],
+    coinClass: "project",
   },
   {
     slug: "hyperliquid",
@@ -328,6 +364,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "hyperliquid",
     categories: ["defi"],
     subcategories: ["derivatives-perps"],
+    coinClass: "project",
   },
   {
     slug: "lido",
@@ -339,6 +376,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "lido-dao",
     categories: ["defi"],
     subcategories: ["liquid-staking"],
+    coinClass: "project",
   },
   {
     slug: "jito",
@@ -350,6 +388,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "jito-governance-token",
     categories: ["defi"],
     subcategories: ["liquid-staking"],
+    coinClass: "project",
   },
   {
     slug: "ondo",
@@ -361,6 +400,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "ondo-finance",
     categories: ["rwa"],
     subcategories: ["tokenized-treasuries"],
+    coinClass: "issuer",
   },
   {
     slug: "centrifuge",
@@ -372,6 +412,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "centrifuge-2",
     categories: ["rwa"],
     subcategories: ["tokenized-treasuries"],
+    coinClass: "issuer",
   },
   {
     slug: "plume",
@@ -383,6 +424,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "plume",
     categories: ["rwa"],
     subcategories: ["tokenized-treasuries"],
+    coinClass: "issuer",
   },
   {
     slug: "tether",
@@ -394,6 +436,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "tether",
     categories: ["stablecoins"],
     subcategories: ["fiat-backed"],
+    coinClass: "issuer",
   },
   {
     slug: "usdc",
@@ -405,6 +448,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "usd-coin",
     categories: ["stablecoins"],
     subcategories: ["fiat-backed"],
+    coinClass: "issuer",
   },
   {
     slug: "ethena",
@@ -416,6 +460,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "ethena-usde",
     categories: ["stablecoins", "defi"],
     subcategories: ["synthetic-dollar", "yield"],
+    coinClass: "issuer",
   },
   {
     slug: "pyusd",
@@ -427,6 +472,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "paypal-usd",
     categories: ["stablecoins"],
     subcategories: ["fiat-backed"],
+    coinClass: "issuer",
   },
   {
     slug: "immutable",
@@ -438,6 +484,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "immutable-x",
     categories: ["gaming"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "gala",
@@ -449,6 +496,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "gala",
     categories: ["gaming"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "sandbox",
@@ -460,6 +508,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "the-sandbox",
     categories: ["gaming"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "axie",
@@ -471,6 +520,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "axie-infinity",
     categories: ["gaming"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "ronin",
@@ -482,6 +532,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "ronin",
     categories: ["gaming"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "beam",
@@ -493,6 +544,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "beam-2",
     categories: ["gaming"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "blur",
@@ -504,6 +556,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "blur",
     categories: ["nfts"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "apecoin",
@@ -515,6 +568,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "apecoin",
     categories: ["nfts"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "treasure",
@@ -526,6 +580,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "magic",
     categories: ["nfts", "gaming"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "degen",
@@ -537,6 +592,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "degen-base",
     categories: ["socialfi"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "cyber",
@@ -548,6 +604,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "cyberconnect",
     categories: ["socialfi"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "farcaster",
@@ -559,6 +616,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: null,
     categories: ["socialfi"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "monero",
@@ -570,6 +628,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "monero",
     categories: ["privacy"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "zcash",
@@ -581,6 +640,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "zcash",
     categories: ["privacy"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "secret",
@@ -592,6 +652,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "secret",
     categories: ["privacy"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "oasis",
@@ -603,6 +664,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "oasis-network",
     categories: ["privacy"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "world",
@@ -614,6 +676,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "worldcoin-wld",
     categories: ["identity"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "ens",
@@ -625,6 +688,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "ethereum-name-service",
     categories: ["identity"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "gitcoin",
@@ -636,6 +700,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "gitcoin",
     categories: ["identity"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "storj",
@@ -647,6 +712,7 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "storj",
     categories: ["storage-data"],
     subcategories: [],
+    coinClass: "project",
   },
   {
     slug: "thegraph",
@@ -658,5 +724,247 @@ export const seedCoins: SeedCoin[] = [
     coingeckoId: "the-graph",
     categories: ["storage-data"],
     subcategories: [],
+    coinClass: "project",
+  },
+  // === 20 new coins (2026-10-21) ===
+  {
+    slug: "bitcoin",
+    name: "Bitcoin",
+    ticker: "BTC",
+    description: "Bitcoin is the first and largest decentralized cryptocurrency by market cap.",
+    website: "https://bitcoin.org",
+    xHandle: "bitcoincoreorg",
+    coingeckoId: "bitcoin",
+    categories: ["l1-l2"],
+    subcategories: [],
+    coinClass: "macro",
+  },
+  {
+    slug: "ethereum",
+    name: "Ethereum",
+    ticker: "ETH",
+    description: "Ethereum is a decentralized blockchain platform for smart contracts and dApps.",
+    website: "https://ethereum.org",
+    xHandle: "ethereum",
+    coingeckoId: "ethereum",
+    categories: ["l1-l2"],
+    subcategories: [],
+    coinClass: "macro+project",
+  },
+  {
+    slug: "solana",
+    name: "Solana",
+    ticker: "SOL",
+    description: "Solana is a high-performance blockchain supporting smart contracts and DeFi applications.",
+    website: "https://solana.com",
+    xHandle: "solana",
+    coingeckoId: "solana",
+    categories: ["l1-l2"],
+    subcategories: [],
+    coinClass: "macro+project",
+  },
+  {
+    slug: "arbitrum",
+    name: "Arbitrum",
+    ticker: "ARB",
+    description: "Arbitrum is an Ethereum Layer 2 scaling solution using optimistic rollups.",
+    website: "https://arbitrum.io",
+    xHandle: "arbitrum",
+    coingeckoId: "arbitrum",
+    categories: ["l1-l2"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "optimism",
+    name: "Optimism",
+    ticker: "OP",
+    description: "Optimism is an Ethereum Layer 2 using optimistic rollups for fast, cheap transactions.",
+    website: "https://optimism.io",
+    xHandle: "Optimism",
+    coingeckoId: "optimism",
+    categories: ["l1-l2"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "polygon",
+    name: "Polygon",
+    ticker: "POL",
+    description: "Polygon is a multi-chain scaling solution for Ethereum with various L2 technologies.",
+    website: "https://polygon.technology",
+    xHandle: "0xPolygon",
+    coingeckoId: "polygon-ecosystem-token",
+    categories: ["l1-l2"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "starknet",
+    name: "Starknet",
+    ticker: "STRK",
+    description: "Starknet is an Ethereum Layer 2 using ZK-rollups for scalable and secure transactions.",
+    website: "https://www.starknet.io",
+    xHandle: "Starknet",
+    coingeckoId: "starknet",
+    categories: ["l1-l2"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "sui",
+    name: "Sui",
+    ticker: "SUI",
+    description: "Sui is a high-throughput Layer 1 blockchain with object-centric data model.",
+    website: "https://sui.io",
+    xHandle: "SuiNetwork",
+    coingeckoId: "sui",
+    categories: ["l1-l2", "defi"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "chainlink",
+    name: "Chainlink",
+    ticker: "LINK",
+    description: "Chainlink is a decentralized oracle network providing external data to smart contracts.",
+    website: "https://chain.link",
+    xHandle: "chainlink",
+    coingeckoId: "chainlink",
+    categories: ["oracles-interop", "rwa"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "layerzero",
+    name: "LayerZero",
+    ticker: "ZRO",
+    description: "LayerZero is an omnichain interoperability protocol enabling cross-chain messaging.",
+    website: "https://layerzero.network",
+    xHandle: "LayerZero_Core",
+    coingeckoId: "layerzero",
+    categories: ["oracles-interop"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "wormhole",
+    name: "Wormhole",
+    ticker: "W",
+    description: "Wormhole is a cross-chain messaging protocol connecting multiple blockchains.",
+    website: "https://wormhole.com",
+    xHandle: "wormhole",
+    coingeckoId: "wormhole",
+    categories: ["oracles-interop"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "eigenlayer",
+    name: "EigenCloud (EigenLayer)",
+    ticker: "EIGEN",
+    description: "EigenCloud (formerly EigenLayer) enables restaking of ETH to secure multiple protocols.",
+    website: "https://www.eigencloud.xyz",
+    xHandle: "eigencloud",
+    coingeckoId: "eigenlayer",
+    categories: ["defi", "ai"],
+    subcategories: ["restaking"],
+    coinClass: "project",
+  },
+  {
+    slug: "morpho",
+    name: "Morpho",
+    ticker: "MORPHO",
+    description: "Morpho is a DeFi lending optimizer that improves capital efficiency on lending protocols.",
+    website: "https://morpho.org",
+    xHandle: "Morpho",
+    coingeckoId: "morpho",
+    categories: ["defi"],
+    subcategories: ["lending"],
+    coinClass: "project",
+  },
+  {
+    slug: "jupiter",
+    name: "Jupiter",
+    ticker: "JUP",
+    description: "Jupiter is the leading DEX aggregator on Solana for optimal swap routing.",
+    website: "https://jup.ag",
+    xHandle: "JupiterExchange",
+    coingeckoId: "jupiter-exchange-solana",
+    categories: ["defi"],
+    subcategories: ["dex"],
+    coinClass: "project",
+  },
+  {
+    slug: "dydx",
+    name: "dYdX",
+    ticker: "DYDX",
+    description: "dYdX is a decentralized perpetual futures exchange with its own appchain.",
+    website: "https://dydx.exchange",
+    xHandle: "dydxfoundation",
+    coingeckoId: "dydx-chain",
+    categories: ["defi"],
+    subcategories: ["perps"],
+    coinClass: "project",
+  },
+  {
+    slug: "maple",
+    name: "Maple Finance",
+    ticker: "SYRUP",
+    description: "Maple Finance provides institutional lending infrastructure for undercollateralized loans.",
+    website: "https://maple.finance",
+    xHandle: "maplefinance",
+    coingeckoId: "syrup",
+    categories: ["rwa", "defi"],
+    subcategories: ["lending"],
+    coinClass: "issuer",
+  },
+  {
+    slug: "mantra",
+    name: "MANTRA",
+    ticker: "OM",
+    description: "MANTRA is a regulatory-compliant blockchain for tokenized real-world assets.",
+    website: "https://www.mantrachain.io",
+    xHandle: "MANTRA_Chain",
+    coingeckoId: "mantra",
+    categories: ["rwa"],
+    subcategories: [],
+    coinClass: "issuer",
+  },
+  {
+    slug: "hivemapper",
+    name: "Hivemapper",
+    ticker: "HONEY",
+    description: "Hivemapper is a decentralized mapping network with dashcam-based data collection.",
+    website: "https://hivemapper.com",
+    xHandle: "Hivemapper",
+    coingeckoId: "hivemapper",
+    categories: ["depin"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "walrus",
+    name: "Walrus",
+    ticker: "WAL",
+    description: "Walrus is a decentralized storage protocol built on Sui for blob storage.",
+    website: "https://www.walrus.xyz",
+    xHandle: "WalrusProtocol",
+    coingeckoId: "walrus-2",
+    categories: ["storage-data"],
+    subcategories: [],
+    coinClass: "project",
+  },
+  {
+    slug: "pudgypenguins",
+    name: "Pudgy Penguins",
+    ticker: "PENGU",
+    description: "Pudgy Penguins is an NFT collection and brand with a growing ecosystem.",
+    website: "https://www.pudgypenguins.com",
+    xHandle: "pudgypenguins",
+    coingeckoId: "pudgy-penguins",
+    categories: ["nfts"],
+    subcategories: [],
+    coinClass: "project",
   },
 ];
