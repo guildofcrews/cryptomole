@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import type { PostWithCoin } from "@/lib/queries";
+import { CoinLogo } from "./CoinLogo";
 
 const sourceLabels: Record<string, string> = {
   x: "X",
@@ -36,9 +37,7 @@ export function PostCard({
                 href={`/coin/${post.coin.slug}`}
                 className="flex-shrink-0"
               >
-                <div className="coin-logo w-8 h-8 text-xs">
-                  {post.coin.ticker.slice(0, 2)}
-                </div>
+                <CoinLogo slug={post.coin.slug} ticker={post.coin.ticker} size="sm" />
               </Link>
             )}
             <div className="flex-1 min-w-0">
@@ -71,7 +70,7 @@ export function PostCard({
               href={`/coin/${post.coin.slug}`}
               className="flex items-center gap-3 group"
             >
-              <div className="coin-logo">{post.coin.ticker.slice(0, 2)}</div>
+              <CoinLogo slug={post.coin.slug} ticker={post.coin.ticker} size="md" />
               <div className="flex flex-col">
                 <span className="font-medium text-sm text-white group-hover:text-ui-accent transition-colors">
                   {post.coin.name}

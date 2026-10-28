@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { getCoins } from "@/lib/queries";
+import { CoinLogo } from "@/components/CoinLogo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
@@ -151,7 +152,7 @@ async function SourcesList() {
           >
             <div className="flex items-center gap-3 mb-4">
               <Link href={`/coin/${coin.slug}`}>
-                <div className="coin-logo">{coin.ticker.slice(0, 2)}</div>
+                <CoinLogo slug={coin.slug} ticker={coin.ticker} size="md" />
               </Link>
               <div>
                 <Link

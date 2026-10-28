@@ -6,6 +6,7 @@ import { PostCard } from "@/components/PostCard";
 import { CoinLinks } from "@/components/CoinCard";
 import { MarketData } from "@/components/MarketData";
 import { FollowButton } from "@/components/FollowButton";
+import { CoinLogo } from "@/components/CoinLogo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
@@ -105,9 +106,7 @@ export default async function CoinPage({
       <header className="mb-8">
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-center gap-4">
-            <div className="coin-logo w-16 h-16 text-2xl">
-              {coin.ticker.slice(0, 2)}
-            </div>
+            <CoinLogo slug={coin.slug} ticker={coin.ticker} size="xl" />
             <div>
               <h1 className="text-2xl sm:text-3xl font-semibold text-white">
                 {coin.name}

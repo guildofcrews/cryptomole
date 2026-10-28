@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
 import { getPostById } from "@/lib/queries";
+import { CoinLogo } from "@/components/CoinLogo";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
@@ -73,9 +74,7 @@ export default async function PostPage({
             href={`/coin/${post.coin.slug}`}
             className="inline-flex items-center gap-2 mb-4 group"
           >
-            <div className="coin-logo w-8 h-8 text-sm">
-              {post.coin.ticker.slice(0, 2)}
-            </div>
+            <CoinLogo slug={post.coin.slug} ticker={post.coin.ticker} size="sm" />
             <span className="font-medium text-white group-hover:text-ui-accent transition-colors">
               {post.coin.name}
             </span>
