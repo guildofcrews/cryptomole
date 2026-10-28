@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Sparkline } from "./Sparkline";
 import { SourceIcon } from "./SourceIcon";
 import { FollowButton } from "./FollowButton";
+import { CoinLogo } from "./CoinLogo";
 import { formatPrice, formatPercentage } from "@/lib/coingecko";
 
 interface Headline {
@@ -53,9 +54,7 @@ export function CoinIntelCard({ coin, market, headlines }: CoinIntelCardProps) {
     <div className="rounded-xl border border-[#30363d] bg-[#161b22] p-4 hover:border-ui-primary/40 transition-all group">
       <div className="flex items-start justify-between mb-3">
         <Link href={`/coin/${coin.slug}`} className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-ui-primary/15 to-purple-500/10 border border-ui-primary/20 flex items-center justify-center text-xs font-bold text-ui-accent flex-shrink-0">
-            {coin.ticker.slice(0, 2)}
-          </div>
+          <CoinLogo slug={coin.slug} ticker={coin.ticker} size="md" />
           <div className="min-w-0">
             <h3 className="font-semibold text-white group-hover:text-ui-accent transition-colors truncate">
               {coin.name}

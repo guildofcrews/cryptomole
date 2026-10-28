@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Coin } from "@/db";
 import { FollowButton } from "./FollowButton";
+import { CoinLogo } from "./CoinLogo";
 
 interface CoinCardProps {
   coin: Coin;
@@ -15,9 +16,7 @@ export function CoinCard({ coin, variant = "card", showFollow = false }: CoinCar
         href={`/coin/${coin.slug}`}
         className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.03] border border-chat-border hover:bg-white/[0.06] hover:border-ui-primary/30 transition-all"
       >
-        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-ui-primary/15 to-purple-500/10 border border-ui-primary/20 flex items-center justify-center text-[10px] font-bold text-ui-accent">
-          {coin.ticker.slice(0, 2)}
-        </div>
+        <CoinLogo slug={coin.slug} ticker={coin.ticker} size="xs" />
         <span className="font-medium text-sm text-white">{coin.ticker}</span>
       </Link>
     );
@@ -27,9 +26,7 @@ export function CoinCard({ coin, variant = "card", showFollow = false }: CoinCar
     return (
       <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg border border-white/10 bg-white/[0.03] hover:bg-white/[0.05] hover:ring-1 hover:ring-white/10 transition-all group">
         <Link href={`/coin/${coin.slug}`} className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="coin-logo w-8 h-8 text-xs">
-            {coin.ticker.slice(0, 2)}
-          </div>
+          <CoinLogo slug={coin.slug} ticker={coin.ticker} size="sm" />
           <span className="text-sm font-medium text-white group-hover:text-ui-accent transition-colors truncate">
             {coin.name}
           </span>
@@ -44,7 +41,7 @@ export function CoinCard({ coin, variant = "card", showFollow = false }: CoinCar
     <div className="card p-5 group">
       <div className="flex items-start justify-between mb-3">
         <Link href={`/coin/${coin.slug}`} className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="coin-logo">{coin.ticker.slice(0, 2)}</div>
+          <CoinLogo slug={coin.slug} ticker={coin.ticker} size="md" />
           <div className="min-w-0">
             <h3 className="font-semibold text-white group-hover:text-ui-accent transition-colors truncate">
               {coin.name}

@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { useFollowedCoins } from "@/hooks/useFollowedCoins";
+import { CoinLogo } from "./CoinLogo";
 
 interface Category {
   slug: string;
@@ -126,9 +127,7 @@ export function ManageCoins({ coins, categories }: ManageCoinsProps) {
                       : "bg-white/5 border border-transparent hover:bg-white/10"
                   }`}
                 >
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-ui-primary/15 to-purple-500/10 border border-ui-primary/20 flex items-center justify-center text-[10px] font-bold text-ui-accent">
-                    {coin.ticker.slice(0, 2)}
-                  </div>
+                  <CoinLogo slug={coin.slug} ticker={coin.ticker} size="xs" />
                   <span className="text-sm text-white flex-1 text-left truncate">
                     {coin.name}
                   </span>
