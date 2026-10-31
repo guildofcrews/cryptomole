@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, pgEnum, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, pgEnum, primaryKey, date, varchar } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
 export const postStatusEnum = pgEnum("post_status", [
@@ -180,6 +180,25 @@ export const postCoinsRelations = relations(postCoins, ({ one }) => ({
   }),
 }));
 
+// Device type enum for analytics
+export const deviceTypeEnum = pgEnum("device_type", [
+  "desktop",
+  "mobile",
+  "tablet",
+]);
+
+// Page views table for first-party analytics
+// Visitor hash is a daily-salted SHA-256 of IP + UA (never stores raw IPs)
+export const pageViews = pgTable("page_views", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  viewDate: date("view_date").notNull(),
+  path: text("path").notNull(),
+  visitorHash: varchar("visitor_hash", { length: 64 }).notNull(),
+  referrerHost: text("referrer_host"),
+  deviceType: deviceTypeEnum("device_type").notNull().default("desktop"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type Coin = typeof coins.$inferSelect;
 export type NewCoin = typeof coins.$inferInsert;
 export type Category = typeof categories.$inferSelect;
@@ -191,3 +210,6 @@ export type NewPost = typeof posts.$inferInsert;
 export type PostCoin = typeof postCoins.$inferSelect;
 export type NewPostCoin = typeof postCoins.$inferInsert;
 export type CoinClass = typeof coinClassEnum.enumValues[number];
+export type PageView = typeof pageViews.$inferSelect;
+export type NewPageView = typeof pageViews.$inferInsert;
+export type DeviceType = typeof deviceTypeEnum.enumValues[number];

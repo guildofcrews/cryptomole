@@ -266,9 +266,14 @@ export default function AboutPage() {
           crypto news, consider becoming a sponsor to help us cover more
           projects and improve our coverage.
         </p>
-        <Link href="/sponsor" className="btn-primary inline-flex">
-          Become a Sponsor
-        </Link>
+        <div className="flex flex-wrap gap-3">
+          <Link href="/sponsor" className="btn-primary inline-flex">
+            Become a Sponsor
+          </Link>
+          <Link href="/advertise" className="btn-secondary inline-flex">
+            Advertise With Us
+          </Link>
+        </div>
       </section>
     </div>
   );
