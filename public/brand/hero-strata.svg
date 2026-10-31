@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 460" preserveAspectRatio="none" aria-hidden="true">
+  <!-- Hero background: soil strata contour lines. Opacity deepens toward the bottom. -->
+  <g fill="none" stroke="#6366f1" stroke-width="1.2" vector-effect="non-scaling-stroke">
+    <path d="M0 70 C240 30 480 110 720 70 S1200 30 1440 70" stroke-opacity="0.07"/>
+    <path d="M0 130 C260 95 470 165 730 128 S1180 92 1440 135" stroke-opacity="0.09"/>
+    <path d="M0 190 C220 160 500 225 740 188 S1210 150 1440 196" stroke-opacity="0.11"/>
+    <path d="M0 250 C250 222 480 285 720 250 S1190 215 1440 258" stroke-opacity="0.13"/>
+    <path d="M0 310 C230 285 510 345 750 312 S1200 280 1440 318" stroke-opacity="0.15"/>
+    <path d="M0 370 C260 348 470 400 730 372 S1180 345 1440 378" stroke-opacity="0.18"/>
+    <path d="M0 430 C240 410 500 455 720 432 S1210 405 1440 436" stroke-opacity="0.22"/>
+  </g>
+</svg>

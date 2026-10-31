@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
-import { Logo, LogoCaption } from "@/components/Logo";
+import Image from "next/image";
+import { NavLink } from "@/components/NavLink";
+import { SearchInput } from "@/components/SearchInput";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
@@ -32,90 +42,60 @@ export const metadata: Metadata = {
   },
 };
 
-function NavLink({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="nav-pill"
-    >
-      {children}
-    </Link>
-  );
-}
-
 function Header() {
   return (
-    <header className="header">
-      <nav className="max-w-6xl mx-auto w-full grid grid-cols-3 items-center">
-        <Link href="/" className="justify-self-start">
-          <Logo size="header" />
+    <header className="cm-header">
+      <div className="cm-container cm-header__inner">
+        <Link href="/" className="cm-logo" aria-label="Crypto Mole home">
+          <Image
+            src="/brand/mole-coin-icon.png"
+            alt=""
+            width={36}
+            height={46}
+            className="h-9 w-auto"
+            unoptimized
+            priority
+          />
+          <span className="cm-wordmark">
+            crypto<span>mole</span>
+          </span>
         </Link>
 
-        <div className="flex items-center justify-center gap-1">
+        <nav className="cm-nav" aria-label="Primary">
           <NavLink href="/">Feed</NavLink>
           <NavLink href="/coins">Coins</NavLink>
           <NavLink href="/sources">Sources</NavLink>
-        </div>
+        </nav>
 
-        <div className="justify-self-end hidden sm:block">
-          <button
-            className="btn-primary text-sm py-2 px-4 opacity-50 cursor-not-allowed"
-            disabled
-            title="Coming soon"
-          >
+        <div className="cm-header__actions">
+          <SearchInput />
+          <Link href="/about" className="cm-btn cm-btn--primary">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+            </svg>
             Get alerts
-          </button>
+          </Link>
         </div>
-        <div className="justify-self-end sm:hidden" />
-      </nav>
+      </div>
     </header>
   );
 }
 
 function Footer() {
   return (
-    <footer className="border-t border-chat-border mt-auto py-4 px-4 bg-chat-bg">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <Logo size="sm" />
-            <span className="text-xs text-ui-muted hidden sm:inline">news, dug up first</span>
-          </div>
-
-          <div className="flex items-center gap-4 sm:gap-6 text-sm">
-            <Link
-              href="/about"
-              className="text-ui-muted hover:text-white transition-colors"
-            >
-              About
-            </Link>
-            <Link
-              href="/sources"
-              className="text-ui-muted hover:text-white transition-colors"
-            >
-              Sources
-            </Link>
-            <Link
-              href="/sponsor"
-              className="text-ui-muted hover:text-white transition-colors"
-            >
-              Sponsor
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <LogoCaption />
-            <span className="text-xs text-ui-muted">
-              © {new Date().getFullYear()}
-            </span>
-          </div>
-        </div>
+    <footer className="cm-footer">
+      <div className="cm-container cm-footer__inner">
+        <span>© Crypto Mole · cryptomole.ai</span>
+        <span>Prices are indicative. News links go to the original source.</span>
       </div>
     </footer>
   );
@@ -127,7 +107,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen flex flex-col bg-chat-bg text-foreground antialiased">
         <Header />
         <main className="flex-1">{children}</main>
