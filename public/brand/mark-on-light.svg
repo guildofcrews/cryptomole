@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Crypto Mole">
+  <defs>
+    <linearGradient id="cm-coin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <path d="M30 72 C30 36 44 18 60 18 C76 18 90 36 90 72 Z" fill="#1e2433"/>
+  <circle cx="49" cy="33" r="2.8" fill="#e0e7ff"/>
+  <circle cx="71" cy="33" r="2.8" fill="#e0e7ff"/>
+  <ellipse cx="60" cy="44" rx="10" ry="8" fill="#2d3548"/>
+  <path d="M49 45 L37 42 M49 49 L37 50 M71 45 L83 42 M71 49 L83 50" stroke="#a5b4fc" stroke-opacity="0.6" stroke-width="1.5" stroke-linecap="round"/>
+  <circle cx="60" cy="47" r="4.5" fill="#fda4af"/>
+  <circle cx="60" cy="84" r="32" fill="url(#cm-coin)"/>
+  <circle cx="60" cy="84" r="25" fill="none" stroke="#ffffff" stroke-opacity="0.25" stroke-width="2.5"/>
+  <path d="M47 76 L73 76 M47 84 L73 84 M47 92 L63 92" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="41" cy="58" rx="8" ry="6" fill="#c7d2fe"/>
+  <ellipse cx="79" cy="58" rx="8" ry="6" fill="#c7d2fe"/>
+  <path d="M37 61 L37 65 M41 62 L41 66 M45 61 L45 65 M75 61 L75 65 M79 62 L79 66 M83 61 L83 65" stroke="#1e2433" stroke-width="2" stroke-linecap="round"/>
+</svg>

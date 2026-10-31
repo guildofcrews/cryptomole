@@ -466,6 +466,29 @@ export async function getCoinCount(): Promise<number> {
   }
 }
 
+export async function getCoinCountsForPosts(): Promise<Record<string, number>> {
+  try {
+    const results = await db
+      .select({
+        coinSlug: coins.slug,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(posts)
+      .innerJoin(coins, eq(posts.coinId, coins.id))
+      .where(eq(posts.status, "approved"))
+      .groupBy(coins.slug);
+
+    const counts: Record<string, number> = {};
+    for (const r of results) {
+      counts[r.coinSlug] = r.count;
+    }
+    return counts;
+  } catch (error) {
+    console.error("Failed to count posts by coin:", error);
+    return {};
+  }
+}
+
 export async function getApprovedPostsWithTopics(limit = 50): Promise<PostWithCoin[]> {
   try {
     const results = await db

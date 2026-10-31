@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="16" height="16">
+  <!-- Favicon (16px). Head + nose + coin only. -->
+  <defs>
+    <linearGradient id="cm-coin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <path d="M26 72 C26 32 42 12 60 12 C78 12 94 32 94 72 Z" fill="#4b5675"/>
+  <circle cx="60" cy="44" r="10" fill="#fda4af"/>
+  <circle cx="60" cy="84" r="36" fill="url(#cm-coin)"/>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="32" height="32" role="img" aria-label="Crypto Mole">
+  <!-- Simplified mark for 24–48px (nav bar, avatars). Fewer details so it stays crisp. -->
+  <defs>
+    <linearGradient id="cm-coin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <path d="M30 72 C30 36 44 18 60 18 C76 18 90 36 90 72 Z" fill="#2d3548" stroke="#a5b4fc" stroke-opacity="0.4" stroke-width="2.5"/>
+  <circle cx="60" cy="47" r="6" fill="#fda4af"/>
+  <circle cx="60" cy="84" r="32" fill="url(#cm-coin)"/>
+  <path d="M46 79 L74 79 M46 90 L66 90" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  <ellipse cx="41" cy="58" rx="8" ry="6" fill="#e0e7ff"/>
+  <ellipse cx="79" cy="58" rx="8" ry="6" fill="#e0e7ff"/>
+</svg>

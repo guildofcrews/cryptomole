@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Crypto Mole app icon">
+  <defs>
+    <linearGradient id="cm-tile" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="116" fill="url(#cm-tile)"/>
+  <g transform="translate(58 58) scale(3.3)">
+    <path d="M30 72 C30 36 44 18 60 18 C76 18 90 36 90 72 Z" fill="#0d1117"/>
+    <circle cx="49" cy="33" r="2.8" fill="#e0e7ff"/>
+    <circle cx="71" cy="33" r="2.8" fill="#e0e7ff"/>
+    <ellipse cx="60" cy="44" rx="10" ry="8" fill="#1e2433"/>
+    <circle cx="60" cy="47" r="4.5" fill="#fda4af"/>
+    <circle cx="60" cy="84" r="32" fill="#ffffff"/>
+    <circle cx="60" cy="84" r="25" fill="none" stroke="#6366f1" stroke-opacity="0.25" stroke-width="2.5"/>
+    <path d="M47 76 L73 76 M47 84 L73 84 M47 92 L63 92" stroke="#6366f1" stroke-width="4" stroke-linecap="round"/>
+    <ellipse cx="41" cy="58" rx="8" ry="6" fill="#e0e7ff"/>
+    <ellipse cx="79" cy="58" rx="8" ry="6" fill="#e0e7ff"/>
+    <path d="M37 61 L37 65 M41 62 L41 66 M45 61 L45 65 M75 61 L75 65 M79 62 L79 66 M83 61 L83 65" stroke="#0d1117" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>
