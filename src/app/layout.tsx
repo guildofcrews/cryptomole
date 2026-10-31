@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import Link from "next/link";
 import Image from "next/image";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NavLink } from "@/components/NavLink";
 import { SearchInput } from "@/components/SearchInput";
+import { TrackingBeacon } from "@/components/TrackingBeacon";
 import "./globals.css";
 
 const inter = Inter({
@@ -112,6 +115,11 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        {/* First-party analytics beacon */}
+        <TrackingBeacon />
+        {/* Vercel Analytics - enable in Vercel project settings */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

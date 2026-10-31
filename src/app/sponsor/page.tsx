@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const metadata = {
   title: "Sponsor | cryptomole",
   description:
@@ -53,6 +55,15 @@ export default function SponsorPage() {
           <p className="text-sm text-ui-accent">
             Stripe payments integration launching soon
           </p>
+        </div>
+
+        <div className="card p-5 text-center">
+          <p className="text-ui-muted mb-3">
+            Looking for advertising opportunities? See our audience stats.
+          </p>
+          <Link href="/advertise" className="btn-primary inline-flex">
+            View Audience Stats →
+          </Link>
         </div>
       </section>
 
