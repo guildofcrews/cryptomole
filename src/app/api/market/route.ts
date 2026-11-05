@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import {
+  fetchCoinGecko,
+  parseCoinIds,
+  PRICE_RESPONSE_HEADERS,
+} from "@/lib/coingecko";
 
-const COINGECKO_API_BASE = "https://api.coingecko.com/api/v3";
+export const dynamic = "force-dynamic";
 
-export interface CoinMarketData {
+interface CoinMarketData {
   id: string;
   symbol: string;
   current_price: number;
@@ -13,43 +18,21 @@ export interface CoinMarketData {
 }
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const ids = searchParams.get("ids");
-
-  if (!ids) {
-    return NextResponse.json({ error: "ids parameter required" }, { status: 400 });
-  }
-
-  const idList = ids.split(",").filter(Boolean);
-  if (idList.length === 0) {
-    return NextResponse.json({ coins: [] });
-  }
-
-  if (idList.length > 100) {
+  const ids = parseCoinIds(request.nextUrl.searchParams.get("ids"));
+  if ("error" in ids) {
     return NextResponse.json(
-      { error: "Maximum 100 coins per request" },
-      { status: 400 }
+      { error: ids.error },
+      { status: ids.status, headers: PRICE_RESPONSE_HEADERS }
     );
+  }
+  if (ids.ids.length === 0) {
+    return NextResponse.json({ coins: [] }, { headers: PRICE_RESPONSE_HEADERS });
   }
 
   try {
-    const response = await fetch(
-      `${COINGECKO_API_BASE}/coins/markets?vs_currency=usd&ids=${ids}&sparkline=true&price_change_percentage=24h`,
-      {
-        next: { revalidate: 300 },
-        headers: { Accept: "application/json" },
-      }
+    const { value: data } = await fetchCoinGecko<CoinMarketData[]>(
+      `/coins/markets?vs_currency=usd&ids=${ids.ids.join(",")}&sparkline=true&price_change_percentage=24h`
     );
-
-    if (!response.ok) {
-      console.error(`CoinGecko API error: ${response.status}`);
-      return NextResponse.json(
-        { error: "Failed to fetch market data" },
-        { status: 502 }
-      );
-    }
-
-    const data: CoinMarketData[] = await response.json();
 
     const coins = data.map((coin) => ({
       id: coin.id,
@@ -61,12 +44,12 @@ export async function GET(request: NextRequest) {
       sparkline: coin.sparkline_in_7d?.price ?? [],
     }));
 
-    return NextResponse.json({ coins });
+    return NextResponse.json({ coins }, { headers: PRICE_RESPONSE_HEADERS });
   } catch (error) {
     console.error("Failed to fetch market data:", error);
     return NextResponse.json(
       { error: "Failed to fetch market data" },
-      { status: 500 }
+      { status: 502, headers: PRICE_RESPONSE_HEADERS }
     );
   }
 }
