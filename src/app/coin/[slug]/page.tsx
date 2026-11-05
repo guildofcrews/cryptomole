@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -7,6 +8,7 @@ import { CoinLinks } from "@/components/CoinCard";
 import { MarketData } from "@/components/MarketData";
 import { FollowButton } from "@/components/FollowButton";
 import { CoinLogo } from "@/components/CoinLogo";
+import { pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
@@ -15,15 +17,16 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}) {
+}): Promise<Metadata> {
   const { slug } = await params;
   const coin = await getCoinBySlug(slug);
   if (!coin) return { title: "Coin Not Found | cryptomole" };
 
-  return {
+  return pageMetadata({
     title: `${coin.name} (${coin.ticker}) News | cryptomole`,
     description: `Latest official news and updates for ${coin.name} (${coin.ticker}). Direct from the team's official sources.`,
-  };
+    path: `/coin/${coin.slug}`,
+  });
 }
 
 async function CoinFeed({ slug }: { slug: string }) {

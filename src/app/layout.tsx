@@ -7,6 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NavLink } from "@/components/NavLink";
 import { SearchInput } from "@/components/SearchInput";
 import { TrackingBeacon } from "@/components/TrackingBeacon";
+import { OG_IMAGE, SITE_NAME, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -23,8 +24,13 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+const defaultTitle = "CryptoMole - Crypto News, Dug Up First";
+const defaultDescription =
+  "Authentic crypto news from official project teams. No rumors, just facts.";
+
 export const metadata: Metadata = {
-  title: "CryptoMole - Crypto News, Dug Up First",
+  metadataBase: new URL(SITE_URL),
+  title: defaultTitle,
   description:
     "Get authentic crypto news for AI projects directly from official team sources. No rumors, no speculation - just verified announcements from Render, Akash, Bittensor, NEAR, and more.",
   keywords: [
@@ -37,11 +43,26 @@ export const metadata: Metadata = {
     "FET",
     "blockchain news",
   ],
+  alternates: {
+    canonical: SITE_URL,
+    types: {
+      "application/rss+xml": "/feed.xml",
+      "application/atom+xml": "/atom.xml",
+    },
+  },
   openGraph: {
-    title: "CryptoMole - Crypto News, Dug Up First",
-    description:
-      "Authentic crypto news from official project teams. No rumors, just facts.",
+    title: defaultTitle,
+    description: defaultDescription,
+    url: SITE_URL,
+    siteName: SITE_NAME,
     type: "website",
+    images: [OG_IMAGE],
+  },
+  twitter: {
+    card: "summary",
+    title: defaultTitle,
+    description: defaultDescription,
+    images: [OG_IMAGE.url],
   },
 };
 
@@ -68,6 +89,7 @@ function Header() {
           <NavLink href="/">Feed</NavLink>
           <NavLink href="/coins">Coins</NavLink>
           <NavLink href="/sources">Sources</NavLink>
+          <NavLink href="/contact">Contact</NavLink>
         </nav>
 
         <div className="cm-header__actions">
@@ -98,6 +120,12 @@ function Footer() {
     <footer className="cm-footer">
       <div className="cm-container cm-footer__inner">
         <span>© Crypto Mole · cryptomole.ai</span>
+        <nav className="cm-footer__nav" aria-label="Footer">
+          <Link href="/contact">Contact</Link>
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/terms">Terms</Link>
+          <Link href="/feed.xml">RSS</Link>
+        </nav>
         <span>Prices are indicative. News links go to the original source.</span>
       </div>
     </footer>

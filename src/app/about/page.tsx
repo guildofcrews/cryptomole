@@ -1,11 +1,14 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { NEWS_EMAIL, pageMetadata } from "@/lib/site";
 
-export const metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About | cryptomole",
   description:
     "Learn how cryptomole delivers verified crypto news directly from official project sources.",
-};
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (
@@ -102,7 +105,7 @@ export default function AboutPage() {
             {
               title: "Direct Inbox",
               description:
-                "Some projects send announcements directly to our dedicated inbox for timely coverage of important updates.",
+                `Projects can send announcements straight to ${NEWS_EMAIL} for timely coverage. The same address is open for partner notes and requests to add a coin.`,
               icon: (
                 <svg
                   className="w-5 h-5"

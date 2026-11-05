@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { format } from "date-fns";
 import { getPostById } from "@/lib/queries";
 import { CoinLogo } from "@/components/CoinLogo";
+import { pageMetadata } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 180;
@@ -20,16 +22,20 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string }>;
-}) {
+}): Promise<Metadata> {
   const { id } = await params;
   const post = await getPostById(id);
-  if (!post) return { title: "Post Not Found | cryptomole" };
+  if (!post || post.status !== "approved") {
+    return { title: "Post Not Found | cryptomole" };
+  }
 
-  return {
+  return pageMetadata({
     title: `${post.title} | ${post.coin.ticker} News | cryptomole`,
     description:
       post.summary || `News about ${post.coin.name} from official sources.`,
-  };
+    path: `/post/${post.id}`,
+    type: "article",
+  });
 }
 
 export default async function PostPage({
