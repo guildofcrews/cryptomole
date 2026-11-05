@@ -1,6 +1,7 @@
-import Link from "next/link";
+import type { Metadata } from "next";
 import { db, pageViews, coins, posts } from "@/db";
 import { sql, eq, gte, desc } from "drizzle-orm";
+import { PARTNERS_EMAIL, pageMetadata } from "@/lib/site";
 
 interface SiteStats {
   visitsLast7Days: number;
@@ -13,11 +14,12 @@ interface SiteStats {
   asOf: string;
 }
 
-export const metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Advertise | cryptomole",
   description:
-    "Reach crypto-native readers with source-verified news. See our audience stats and sponsorship options.",
-};
+    "See who reads CryptoMole. Email partners@cryptomole.ai when you're ready to talk about sponsorship.",
+  path: "/advertise",
+});
 
 export const dynamic = "force-dynamic";
 export const revalidate = 300;
@@ -179,7 +181,7 @@ export default async function AdvertisePage() {
           Advertise on cryptomole
         </h1>
         <p className="text-ui-muted text-lg">
-          Reach crypto-native readers who value source-verified news
+          Audience first. When you&apos;re ready, this is who reads the site.
         </p>
       </header>
 
@@ -238,7 +240,7 @@ export default async function AdvertisePage() {
       {/* Why Advertise */}
       <section className="mb-12">
         <h2 className="text-xl font-semibold text-white mb-6 text-center">
-          Why Advertise With Us
+          The readership
         </h2>
         <div className="grid md:grid-cols-3 gap-4">
           {[
@@ -266,7 +268,7 @@ export default async function AdvertisePage() {
             {
               title: "Source-Verified Trust",
               description:
-                "We only publish official news, so your brand appears alongside trusted, verified content.",
+                "Pages stay next to official announcements, with a link back to the original source.",
               icon: (
                 <svg
                   className="w-6 h-6"
@@ -315,28 +317,34 @@ export default async function AdvertisePage() {
 
       {/* Ad Placements */}
       <section className="mb-12">
-        <h2 className="text-xl font-semibold text-white mb-6">Ad Placements</h2>
+        <h2 className="text-xl font-semibold text-white mb-2">
+          Placements, when they open
+        </h2>
+        <p className="text-sm text-ui-muted mb-6">
+          Nothing is for sale on this page. These are the spots we expect to
+          offer later.
+        </p>
         <div className="grid gap-4">
           {[
             {
               name: "Sidebar Sponsor",
               description:
                 "Your logo and message in the sidebar sponsor card on every page",
-              price: "Contact us",
+              price: "Later",
               featured: false,
             },
             {
               name: "Featured Sponsor",
               description:
                 "Premium placement with larger logo, featured in the feed and coin pages",
-              price: "Contact us",
+              price: "Later",
               featured: true,
             },
             {
               name: "Category Sponsor",
               description:
                 "Exclusive sponsorship of a specific coin category (AI, DeFi, etc.)",
-              price: "Contact us",
+              price: "Later",
               featured: false,
             },
           ].map((tier) => (
@@ -375,18 +383,18 @@ export default async function AdvertisePage() {
           <polyline points="22,6 12,13 2,6" />
         </svg>
         <h2 className="text-lg font-semibold text-white mb-2">
-          Get in Touch
+          When you&apos;re ready
         </h2>
         <p className="text-ui-muted mb-4">
-          Interested in reaching our audience? Let&apos;s discuss how we can
-          work together.
+          We&apos;re building the readership first. If you have sponsorship
+          interest, email us and we&apos;ll follow up when placements open.
         </p>
-        <p className="text-sm text-ui-accent mb-6">
-          Contact: sponsors@cryptomole.ai
-        </p>
-        <Link href="/sponsor" className="cm-btn cm-btn--primary">
-          View Sponsorship Options
-        </Link>
+        <a
+          href={`mailto:${PARTNERS_EMAIL}`}
+          className="cm-btn cm-btn--primary"
+        >
+          {PARTNERS_EMAIL}
+        </a>
       </section>
     </div>
   );

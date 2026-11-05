@@ -201,7 +201,7 @@ export default function SponsorPage() {
           Want to be the first to know when sponsorships launch? Reach out to us
           and we&apos;ll let you know.
         </p>
-        <p className="text-sm text-ui-accent">Contact: sponsors@cryptomole.ai</p>
+        <p className="text-sm text-ui-accent">Contact: partners@cryptomole.ai</p>
       </section>
     </div>
   );

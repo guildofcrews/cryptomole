@@ -1244,12 +1244,25 @@ button { font-family: inherit; }
 .cm-footer__inner {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding-top: 24px;
-  padding-bottom: 24px;
+  gap: 10px 16px;
+  padding-top: 16px;
+  padding-bottom: 16px;
   font-size: 12px;
   color: var(--cm-text-muted);
+}
+.cm-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.cm-footer__nav a {
+  color: var(--cm-text-muted);
+  text-decoration: none;
+}
+.cm-footer__nav a:hover {
+  color: #c4b5fd;
 }
 
 /* ========================================================================

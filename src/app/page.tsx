@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { pageMetadata } from "@/lib/site";
+
+export const metadata: Metadata = pageMetadata({
+  title: "CryptoMole - Crypto News, Dug Up First",
+  description:
+    "Authentic crypto news from official project teams. No rumors, just facts.",
+  path: "/",
+});
 import {
   getCoins,
   getCategories,
