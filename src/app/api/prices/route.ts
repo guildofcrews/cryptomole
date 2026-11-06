@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const COINGECKO_API_BASE = "https://api.coingecko.com/api/v3";
+import {
+  fetchCoinGecko,
+  parseCoinIds,
+  PRICE_RESPONSE_HEADERS,
+} from "@/lib/coingecko";
 
 interface PriceQuote {
   id: string;
@@ -9,72 +12,44 @@ interface PriceQuote {
   ts: number;
 }
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const ids = searchParams.get("ids");
-
-  if (!ids) {
+  const ids = parseCoinIds(request.nextUrl.searchParams.get("ids"));
+  if ("error" in ids) {
     return NextResponse.json(
-      { error: "ids parameter required" },
-      { status: 400 }
+      { error: ids.error },
+      { status: ids.status, headers: PRICE_RESPONSE_HEADERS }
     );
   }
-
-  const idList = ids.split(",").filter(Boolean);
-  if (idList.length === 0) {
-    return NextResponse.json([]);
-  }
-
-  if (idList.length > 100) {
-    return NextResponse.json(
-      { error: "Maximum 100 coins per request" },
-      { status: 400 }
-    );
+  if (ids.ids.length === 0) {
+    return NextResponse.json([], { headers: PRICE_RESPONSE_HEADERS });
   }
 
   try {
-    const response = await fetch(
-      `${COINGECKO_API_BASE}/coins/markets?vs_currency=usd&ids=${ids}&sparkline=false&price_change_percentage=7d`,
+    const { value: data, fetchedAt } = await fetchCoinGecko<
       {
-        next: { revalidate: 30 },
-        headers: { Accept: "application/json" },
-      }
-    );
-
-    if (!response.ok) {
-      console.error(`CoinGecko API error: ${response.status}`);
-      return NextResponse.json(
-        { error: "Failed to fetch prices" },
-        { status: 502 }
-      );
-    }
-
-    const data = await response.json();
-    const ts = Date.now();
-
-    const quotes: PriceQuote[] = data.map(
-      (coin: {
         id: string;
         current_price: number;
         price_change_percentage_7d_in_currency?: number;
-      }) => ({
-        id: coin.id,
-        price: coin.current_price,
-        change7d: coin.price_change_percentage_7d_in_currency ?? 0,
-        ts,
-      })
+      }[]
+    >(
+      `/coins/markets?vs_currency=usd&ids=${ids.ids.join(",")}&sparkline=false&price_change_percentage=7d`
     );
 
-    return NextResponse.json(quotes, {
-      headers: {
-        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
-      },
-    });
+    const quotes: PriceQuote[] = data.map((coin) => ({
+      id: coin.id,
+      price: coin.current_price,
+      change7d: coin.price_change_percentage_7d_in_currency ?? 0,
+      ts: fetchedAt,
+    }));
+
+    return NextResponse.json(quotes, { headers: PRICE_RESPONSE_HEADERS });
   } catch (error) {
     console.error("Failed to fetch prices:", error);
     return NextResponse.json(
       { error: "Failed to fetch prices" },
-      { status: 500 }
+      { status: 502, headers: PRICE_RESPONSE_HEADERS }
     );
   }
 }

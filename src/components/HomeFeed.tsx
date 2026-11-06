@@ -123,125 +123,91 @@ interface PriceQuote {
   ts: number;
 }
 
-// v1.1: Live price hook with polling, visibility change, and backoff
+// Live quotes. Polls on a fixed interval and refetches when the tab becomes visible.
+// The effect must not depend on the latest tick: that restarted the poll on every
+// response and piled up in-flight requests whose older bodies could paint last.
 function useLivePrices(
   coingeckoIds: string[],
   onQuote: (quote: PriceQuote) => void
 ) {
   const [status, setStatus] = useState<PriceStatus>("live");
-  const [lastTick, setLastTick] = useState<number>(() => Date.now());
-  const lastEmit = useRef<Record<string, number>>({});
-  const pending = useRef<Record<string, PriceQuote>>({});
-  const retryCount = useRef(0);
-  const pollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const staleTimer = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const throttleMs = 1000;
-  const staleAfterMs = 30000;
-  const pollMs = 15000;
-
-  const deliver = useCallback(
-    (q: PriceQuote) => {
-      const now = Date.now();
-      setLastTick(now);
-
-      if (now - (lastEmit.current[q.id] || 0) >= throttleMs) {
-        lastEmit.current[q.id] = now;
-        onQuote(q);
-      } else if (!pending.current[q.id]) {
-        pending.current[q.id] = q;
-        setTimeout(() => {
-          const p = pending.current[q.id];
-          delete pending.current[q.id];
-          if (p) {
-            lastEmit.current[p.id] = Date.now();
-            onQuote(p);
-          }
-        }, throttleMs - (now - (lastEmit.current[q.id] || 0)));
-      } else {
-        pending.current[q.id] = q;
-      }
-
-      if (status !== "live") setStatus("live");
-    },
-    [onQuote, status]
-  );
-
-  const fetchPrices = useCallback(async () => {
-    if (!coingeckoIds.length) return;
-
-    try {
-      const response = await fetch(`/api/prices?ids=${coingeckoIds.join(",")}`);
-      if (!response.ok) throw new Error("Failed to fetch");
-      const quotes: PriceQuote[] = await response.json();
-      retryCount.current = 0;
-      quotes.forEach(deliver);
-    } catch {
-      // Backoff on error
-    }
-  }, [coingeckoIds, deliver]);
-
-  const scheduleReconnect = useCallback(() => {
-    const delay =
-      Math.min(30000, 1000 * Math.pow(2, retryCount.current++)) *
-      (0.8 + Math.random() * 0.4);
-    pollTimer.current = setTimeout(() => {
-      fetchPrices();
-      pollTimer.current = setInterval(fetchPrices, pollMs);
-    }, delay);
-  }, [fetchPrices]);
-
-  const startPolling = useCallback(() => {
-    if (pollTimer.current) clearInterval(pollTimer.current);
-    fetchPrices();
-    pollTimer.current = setInterval(fetchPrices, pollMs);
-  }, [fetchPrices]);
-
-  const stopPolling = useCallback(() => {
-    if (pollTimer.current) {
-      clearInterval(pollTimer.current);
-      clearTimeout(pollTimer.current);
-      pollTimer.current = null;
-    }
-  }, []);
+  const [lastTick, setLastTick] = useState<number | null>(null);
+  const onQuoteRef = useRef(onQuote);
+  const idsKey = coingeckoIds.join(",");
 
   useEffect(() => {
-    if (!coingeckoIds.length) return;
+    onQuoteRef.current = onQuote;
+  }, [onQuote]);
+
+  useEffect(() => {
+    if (!idsKey) return;
+
+    let cancelled = false;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
+    let lastSuccess = Date.now();
+    const staleAfterMs = 30_000;
+    const pollMs = 15_000;
+
+    const fetchPrices = async () => {
+      try {
+        const response = await fetch(`/api/prices?ids=${idsKey}`, {
+          cache: "no-store",
+        });
+        if (!response.ok) throw new Error("Failed to fetch");
+        const quotes: PriceQuote[] = await response.json();
+        if (cancelled || !Array.isArray(quotes)) return;
+
+        const tick = quotes.reduce(
+          (min, quote) => Math.min(min, quote.ts || Date.now()),
+          Date.now()
+        );
+        lastSuccess = Date.now();
+        setLastTick(tick);
+        setStatus("live");
+        quotes.forEach((quote) => onQuoteRef.current(quote));
+      } catch {
+        // The interval retries. Status flips to stale if nothing lands.
+      }
+    };
+
+    const startPolling = () => {
+      if (pollTimer) clearInterval(pollTimer);
+      void fetchPrices();
+      pollTimer = setInterval(() => {
+        void fetchPrices();
+      }, pollMs);
+    };
+
+    const stopPolling = () => {
+      if (pollTimer) clearInterval(pollTimer);
+      pollTimer = null;
+    };
 
     const handleVisibility = () => {
       if (document.hidden) {
         stopPolling();
         setStatus("paused");
       } else {
-        fetchPrices().then(startPolling);
         setStatus("live");
+        startPolling();
       }
     };
 
     document.addEventListener("visibilitychange", handleVisibility);
     startPolling();
 
-    staleTimer.current = setInterval(() => {
-      if (status === "live" && Date.now() - lastTick > staleAfterMs) {
-        setStatus("stale");
-        scheduleReconnect();
-      }
+    const staleTimer = setInterval(() => {
+      if (cancelled || document.hidden) return;
+      if (Date.now() - lastSuccess > staleAfterMs) setStatus("stale");
     }, 1000);
 
     return () => {
+      cancelled = true;
       document.removeEventListener("visibilitychange", handleVisibility);
       stopPolling();
-      if (staleTimer.current) clearInterval(staleTimer.current);
+      clearInterval(staleTimer);
     };
-  }, [
-    coingeckoIds,
-    fetchPrices,
-    lastTick,
-    scheduleReconnect,
-    startPolling,
-    status,
-    stopPolling,
-  ]);
+  }, [idsKey]);
 
   return { status, lastTick };
 }
@@ -311,21 +277,40 @@ export function HomeFeed({
     handlePriceQuote
   );
 
-  // Initial market data fetch (for sparkline history)
+  // Sparkline history. Must not replace a quote already delivered by /api/prices:
+  // this response used to arrive later and paint the older cached snapshot.
   useEffect(() => {
     const ids = coingeckoIdsList.join(",");
     if (!ids) return;
+    let cancelled = false;
 
-    fetch(`/api/market?ids=${ids}`)
+    fetch(`/api/market?ids=${ids}`, { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : { coins: [] }))
       .then((data) => {
-        const map: Record<string, MarketData> = {};
-        for (const m of data.coins || []) {
-          map[m.id] = m;
-        }
-        setMarketData(map);
+        if (cancelled) return;
+        setMarketData((prev) => {
+          const map: Record<string, MarketData> = { ...prev };
+          for (const coin of data.coins || []) {
+            const existing = map[coin.id];
+            if (!existing) {
+              map[coin.id] = coin;
+              continue;
+            }
+            map[coin.id] = {
+              ...existing,
+              sparkline: coin.sparkline?.length
+                ? coin.sparkline
+                : existing.sparkline,
+            };
+          }
+          return map;
+        });
       })
       .catch(console.error);
+
+    return () => {
+      cancelled = true;
+    };
   }, [coingeckoIdsList]);
 
   // Cleanup flash timers on unmount
@@ -396,9 +381,12 @@ export function HomeFeed({
   const liveStatusText = useMemo(() => {
     if (priceStatus === "stale") return "Reconnecting prices…";
     if (priceStatus === "paused") return "Prices paused";
+    if (lastTick == null) {
+      return coingeckoIdsList.length ? "Fetching prices…" : "Prices live";
+    }
     const ago = Math.max(0, Math.round((currentTime - lastTick) / 1000));
     return `Prices live · ${ago < 2 ? "just now" : `${ago}s ago`}`;
-  }, [priceStatus, lastTick, currentTime]);
+  }, [priceStatus, lastTick, currentTime, coingeckoIdsList.length]);
 
   const feedLabel =
     selectedCoin === "all"
@@ -435,7 +423,13 @@ export function HomeFeed({
             {/* v1.1: Live price status */}
             <span
               className="cm-live-status"
-              data-state={priceStatus === "stale" ? "stale" : "live"}
+              data-state={
+                priceStatus === "stale"
+                  ? "stale"
+                  : coingeckoIdsList.length > 0 && lastTick == null
+                    ? "loading"
+                    : "live"
+              }
             >
               {liveStatusText}
             </span>

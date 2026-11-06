@@ -656,6 +656,10 @@ button { font-family: inherit; }
   background: var(--cm-warn);
   box-shadow: none;
 }
+.cm-live-status[data-state="loading"]::before {
+  background: var(--cm-text-muted);
+  box-shadow: none;
+}
 
 .cm-rail {
   display: flex;
